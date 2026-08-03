@@ -1,0 +1,473 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductCategory {
+  BOOKS
+  GAMES
+  CONSOLES
+  VINYL
+  RARE_COLLECTIBLE
+  MUSIC_FILM
+  JEWELLERY_CURIOSITIES
+  ACCESSORIES
+  COLLECTIBLES
+  MISCELLANEOUS
+}
+
+enum InventoryState {
+  DRAFT
+  NEEDS_REVIEW
+  READY
+  PUBLISHED
+  RESERVED
+  SOLD
+  ARCHIVED
+  REJECTED
+}
+
+enum ConditionGrade {
+  NEW_SEALED
+  LIKE_NEW
+  VERY_GOOD
+  GOOD
+  ACCEPTABLE
+  FOR_PARTS_UNTESTED
+  STAFF_REVIEWED_COLLECTIBLE
+}
+
+enum ShelfStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  READY_FOR_COLLECTION
+  SHIPPED
+  COMPLETED
+  CANCELLED
+  PAYMENT_FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum ReservationState {
+  ACTIVE
+  CONVERTED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum DeliveryMethod {
+  SHIP_IE
+  CLICK_AND_COLLECT
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  SKIPPED
+  FAILED
+}
+
+enum RefundStatus {
+  REQUESTED
+  SUCCEEDED
+  FAILED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  role         Role      @default(CUSTOMER)
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+  auditLogs    AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id              String           @id @default(cuid())
+  title           String
+  slug            String           @unique
+  category        ProductCategory
+  subcategory     String
+  creator         String?
+  publisher       String?
+  platform        String?
+  format          String?
+  isbn            String?
+  ean             String?
+  sku             String           @unique
+  priceMinor      Int
+  currency        String           @default("EUR")
+  shortDescription String
+  description     String
+  conditionGrade  ConditionGrade
+  conditionReport String
+  included        String[]
+  missing         String[]
+  testedStatus    String?
+  shelfLocation   String
+  stockLocationId String?
+  catalogueProductId String?
+  barcode         String?
+  staffNotes      String?
+  collectionOnly  Boolean          @default(false)
+  shippingProfile String?
+  conditionDetails Json?
+  quantity        Int              @default(1)
+  inventoryState  InventoryState   @default(PUBLISHED)
+  isFeatured      Boolean          @default(false)
+  isStaffPick     Boolean          @default(false)
+  isRare          Boolean          @default(false)
+  imageUrl        String
+  gallery         String[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  publishedAt     DateTime?
+  shelfItems      CuratedShelfProduct[]
+  stockLocation   StockLocation?   @relation(fields: [stockLocationId], references: [id])
+  catalogueProduct CatalogueProduct? @relation(fields: [catalogueProductId], references: [id])
+  orderItems      OrderItem[]
+  reservations     InventoryReservation[]
+
+  @@index([category])
+  @@index([inventoryState])
+  @@index([title])
+  @@index([barcode])
+  @@index([catalogueProductId])
+}
+
+model CatalogueProduct {
+  id              String          @id @default(cuid())
+  title           String
+  subtitle        String?
+  category        ProductCategory
+  creator         String?
+  publisher       String?
+  platform        String?
+  region          String?
+  format          String?
+  isbn10          String?
+  isbn13          String?
+  ean             String?
+  upc             String?
+  language        String?
+  publicationDate String?
+  releaseDate     String?
+  edition         String?
+  pageCount       Int?
+  subjects        String[]
+  description     String?
+  coverImageUrl   String?
+  sourceProvider  String
+  sourceId        String
+  sourcePayload   Json?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  products        Product[]
+
+  @@index([isbn10])
+  @@index([isbn13])
+  @@index([ean])
+  @@index([upc])
+}
+
+model IntakeSession {
+  id                String   @id @default(cuid())
+  userId            String
+  intakeType        String
+  barcode           String?
+  barcodeType       String?
+  status            String   @default("STARTED")
+  candidatePayload  Json?
+  selectedCandidate Json?
+  duplicatePayload  Json?
+  createdProductId  String?
+  errorMessage      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AiExtraction {
+  id                  String   @id @default(cuid())
+  userId              String
+  productId           String?
+  model               String
+  promptVersion       String
+  featureEnabled      Boolean
+  provider            String
+  inputImages         String[]
+  rawValidatedResponse Json?
+  staffEdits          Json?
+  finalApprovedValues Json?
+  costMinor           Int?
+  inputTokens         Int?
+  outputTokens        Int?
+  errorMessage        String?
+  createdAt           DateTime @default(now())
+  approvedAt          DateTime?
+  approvingUserId     String?
+}
+
+model StockLocation {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  publicLabel String
+  notes       String?
+  active      Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Order {
+  id                    String        @id @default(cuid())
+  orderNumber           String        @unique
+  userId                String?
+  customerEmail         String
+  customerName          String
+  customerPhone         String?
+  status                OrderStatus   @default(PENDING_PAYMENT)
+  paymentStatus         PaymentStatus @default(UNPAID)
+  deliveryMethod        DeliveryMethod @default(CLICK_AND_COLLECT)
+  shippingAddress       Json?
+  billingAddress        Json?
+  shippingCostMinor     Int           @default(0)
+  subtotalMinor         Int           @default(0)
+  taxMinor              Int           @default(0)
+  totalMinor            Int
+  currency              String        @default("EUR")
+  stripeSessionId       String?       @unique
+  stripePaymentIntentId String?
+  checkoutReference     String?       @unique
+  publicNotes           String?
+  staffNotes            String?
+  trackingNumber        String?
+  emailStatus           EmailStatus   @default(PENDING)
+  paidAt                DateTime?
+  readyAt               DateTime?
+  shippedAt             DateTime?
+  completedAt           DateTime?
+  cancelledAt           DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  items                 OrderItem[]
+  reservations          InventoryReservation[]
+  refunds               Refund[]
+  emailEvents           EmailEvent[]
+
+  @@index([status])
+  @@index([customerEmail])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  orderId         String
+  productId       String
+  productSlug     String  @default("")
+  title           String
+  skuSnapshot     String  @default("")
+  priceMinor      Int
+  quantity        Int     @default(1)
+  categorySnapshot String @default("")
+  imageUrlSnapshot String @default("")
+  conditionSnapshot String @default("")
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product @relation(fields: [productId], references: [id])
+}
+
+model InventoryReservation {
+  id                String           @id @default(cuid())
+  productId         String
+  orderId           String?
+  state             ReservationState @default(ACTIVE)
+  quantity          Int              @default(1)
+  expiresAt         DateTime
+  checkoutSessionId String?
+  paymentIntentId   String?
+  convertedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  product           Product          @relation(fields: [productId], references: [id])
+  order             Order?           @relation(fields: [orderId], references: [id])
+
+  @@index([productId, state])
+  @@index([expiresAt])
+  @@index([checkoutSessionId])
+}
+
+model StripeWebhookEvent {
+  id             String   @id
+  type           String
+  processedAt    DateTime @default(now())
+  payload        Json
+  relatedOrderId String?
+
+  @@index([type])
+  @@index([processedAt])
+}
+
+model EmailEvent {
+  id           String      @id @default(cuid())
+  orderId      String?
+  recipient    String
+  template     String
+  subject      String
+  status       EmailStatus @default(PENDING)
+  provider     String
+  errorMessage String?
+  createdAt    DateTime    @default(now())
+  sentAt        DateTime?
+  order        Order?       @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model Refund {
+  id             String       @id @default(cuid())
+  orderId        String
+  amountMinor    Int
+  reason         String
+  status         RefundStatus @default(REQUESTED)
+  stripeRefundId String?      @unique
+  idempotencyKey String       @unique
+  createdById    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  order          Order        @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+}
+
+model SiteSetting {
+  key       String   @id
+  label     String
+  value     String
+  group     String
+  updatedAt DateTime @updatedAt
+}
+
+model LegalPage {
+  slug      String   @id
+  title     String
+  body      String
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+model CuratedShelf {
+  id              String                 @id @default(cuid())
+  title           String
+  slug            String                 @unique
+  introduction    String
+  coverImageUrl   String
+  curatorName     String?
+  homepageVisible Boolean                @default(false)
+  displayOrder    Int                    @default(0)
+  status          ShelfStatus            @default(PUBLISHED)
+  seoTitle        String?
+  metaDescription String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  products        CuratedShelfProduct[]
+}
+
+model CuratedShelfProduct {
+  shelfId   String
+  productId String
+  sortOrder Int
+  note      String?
+  shelf     CuratedShelf @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([shelfId, productId])
+  @@index([productId])
+}
+
+model WantedRequest {
+  id                 String   @id @default(cuid())
+  title              String?
+  author             String?
+  isbn               String?
+  platform           String?
+  category           String?
+  notes              String
+  maxPriceMinor      Int?
+  preferredCondition String?
+  contactEmail       String
+  createdAt          DateTime @default(now())
+}
+
+model SellTradeSubmission {
+  id             String   @id @default(cuid())
+  contactName    String
+  contactEmail   String
+  preference     String
+  notes          String
+  status         String   @default("SUBMITTED")
+  createdAt      DateTime @default(now())
+}

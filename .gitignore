@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.env
+.env.*
+!.env.example
+coverage
+test-results
+playwright-report
+prisma/dev.db
+screenshots
+tsconfig.tsbuildinfo
+.claude-flow
+.ruflo
+.ruvector
