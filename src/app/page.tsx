@@ -12,6 +12,7 @@ const mapsHref =
 const rooms = [
   {
     label: "Books",
+    showLabel: true,
     href: "/books",
     image: "/lovable/room-library.jpg",
     tags: ["Fiction", "Non-fiction", "Irish Writing"],
@@ -22,6 +23,7 @@ const rooms = [
   },
   {
     label: "Games",
+    showLabel: false,
     href: "/games",
     image: "/lovable/room-arcade.jpg",
     tags: ["Nintendo", "PlayStation", "Xbox"],
@@ -32,6 +34,7 @@ const rooms = [
   },
   {
     label: "Music & Film",
+    showLabel: false,
     href: "/music-film",
     image: "/lovable/room-sound-vision.jpg",
     tags: ["Vinyl", "CDs", "DVD & Blu-ray"],
@@ -42,6 +45,7 @@ const rooms = [
   },
   {
     label: "Rare & Collectible",
+    showLabel: false,
     href: "/rare-collectible",
     image: "/lovable/room-curiosity.jpg",
     tags: ["Rare Books", "Figures", "Curiosities"],
@@ -140,12 +144,14 @@ export default function HomePage() {
         </section>
 
         <section id="inside" aria-label="Inside the shop" className={styles.roomsSection}>
-          <div className={styles.roomsHeader}>
-            <h1>Four rooms</h1>
-          </div>
           <div className={styles.roomsGrid}>
             {rooms.map((room) => (
-              <Link href={room.href} key={room.href} className={styles.roomCard}>
+              <Link
+                href={room.href}
+                key={room.href}
+                aria-label={`${room.label} department - Browse`}
+                className={styles.roomCard}
+              >
                 <Image
                   src={room.image}
                   alt={`${room.label} room at Bookmart and Game Exchange`}
@@ -156,7 +162,7 @@ export default function HomePage() {
                 <span className={styles.roomGrade} style={{ background: room.grade }} aria-hidden="true" />
                 <span className={styles.roomGlow} style={{ "--room-glow": room.glow } as React.CSSProperties} aria-hidden="true" />
                 <span className={styles.roomText}>
-                  <strong>{room.label}</strong>
+                  {room.showLabel ? <strong>{room.label}</strong> : null}
                   <span>{room.tags.join(" · ")}</span>
                   <small>{room.count}</small>
                   <em>Browse <ArrowRight aria-hidden="true" size={14} /></em>
@@ -207,7 +213,10 @@ function ShopBar() {
         <small>&amp; GameXchange</small>
       </Link>
       <nav aria-label="The counter" className={styles.counterNav}>
-        <Link href="/account/login" aria-label="Admin login" title="Admin login"><User aria-hidden="true" size={18} /></Link>
+        <Link href="/account/login" className={styles.adminLink} aria-label="Admin login">
+          <User aria-hidden="true" size={17} />
+          <span>Admin</span>
+        </Link>
         <Link href="/wishlist" aria-label="Wishlist" title="Wishlist"><Heart aria-hidden="true" size={18} /></Link>
         <Link href="/basket" aria-label="Basket" title="Basket"><ShoppingBag aria-hidden="true" size={18} /></Link>
       </nav>
