@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./storefront-home.module.css";
 
 const mapsHref =
-  "https://www.google.com/maps/search/?api=1&query=Bookmart%20%26%20Game%20Exchange%2073%20Talbot%20Street%20Dublin%201%20D01%20C861";
+  "https://www.google.com/maps/search/?api=1&query=Bookmart%20%26%20Game%20Exchange%2073%20Talbot%20Street%20Dublin%201%20D01%20TW28";
 
 const rooms = [
   {
@@ -96,7 +96,7 @@ export default function HomePage() {
             className={`${styles.storefrontImage} ${styles.storefrontPortrait}`}
           />
           <Image
-            src="/lovable/storefront-pixel.png"
+            src="/lovable/storefront-pixel-corrected.png"
             alt=""
             aria-hidden="true"
             fill
