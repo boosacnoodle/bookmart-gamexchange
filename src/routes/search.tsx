@@ -7,6 +7,7 @@ import { StockCard } from "@/components/shop/StockCard";
 import { TradeCounter } from "@/components/shop/TradeCounter";
 import { ROOMS } from "@/data/rooms";
 import { searchStock } from "@/data/stock";
+import { searchInventory } from "@/lib/catalog.server";
 
 const TITLE = "Search the shop — Bookmart & GameXchange";
 const DESCRIPTION =
@@ -16,6 +17,8 @@ export const Route = createFileRoute("/search")({
   validateSearch: (search: Record<string, unknown>) => ({
     q: typeof search["q"] === "string" ? (search["q"] as string).slice(0, 120) : "",
   }),
+  loaderDeps: ({ search: { q } }) => ({ q }),
+  loader: ({ deps }) => searchInventory({ data: { query: deps.q } }),
   head: () => ({
     meta: [
       { title: TITLE },
@@ -32,7 +35,8 @@ export const Route = createFileRoute("/search")({
 
 function SearchPage() {
   const { q } = Route.useSearch();
-  const results = useMemo(() => searchStock(q), [q]);
+  const liveResults = Route.useLoaderData();
+  const results = useMemo(() => [...liveResults, ...searchStock(q)], [liveResults, q]);
 
   const grouped = useMemo(
     () =>

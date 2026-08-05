@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { ListRow } from "@/components/shop/ListRow";
 import { ShopPage } from "@/components/shop/ShopPage";
 import { SHOP } from "@/data/shop";
-import { STOCK, formatPrice } from "@/data/stock";
+import { STOCK, formatPrice, type StockItem } from "@/data/stock";
+import { getCheckoutItems } from "@/lib/checkout.server";
 import { clearList, removeFrom, useList } from "@/lib/shop-lists";
 
 const TITLE = "On the counter — Bookmart & GameXchange";
@@ -27,10 +29,50 @@ export const Route = createFileRoute("/basket")({
 
 function Basket() {
   const ids = useList("basket");
+  const idsKey = ids.join("\u001f");
+  const [live, setLive] = useState<Awaited<ReturnType<typeof getCheckoutItems>>>([]);
+  useEffect(() => {
+    if (!idsKey) {
+      setLive([]);
+      return;
+    }
+    void getCheckoutItems({ data: { keys: idsKey.split("\u001f") } })
+      .then(setLive)
+      .catch(() => setLive([]));
+  }, [idsKey]);
+  const liveByKey = new Map(
+    live.flatMap((item) => [
+      [item.id, item],
+      [item.slug, item],
+    ]),
+  );
   const items = ids
-    .map((id) => STOCK.find((item) => item.id === id))
-    .filter((item): item is (typeof STOCK)[number] => Boolean(item));
+    .map((id): StockItem | undefined => {
+      const databaseItem = liveByKey.get(id);
+      if (databaseItem) {
+        return {
+          id: databaseItem.id,
+          slug: databaseItem.slug,
+          title: databaseItem.title,
+          maker: databaseItem.maker,
+          room: normalizeRoom(databaseItem.room),
+          shelf: databaseItem.shelf,
+          tags: [],
+          price: databaseItem.priceMinor / 100,
+          condition: databaseItem.condition,
+          note: "",
+          traded: databaseItem.publishedAt,
+          imageUrl: databaseItem.imageUrl,
+          collectionOnly: databaseItem.collectionOnly,
+          deliveryEligible: databaseItem.deliveryEligible,
+          clickCollectEligible: databaseItem.clickCollectEligible,
+        };
+      }
+      return STOCK.find((item) => item.id === id);
+    })
+    .filter((item): item is StockItem => Boolean(item));
   const total = items.reduce((sum, item) => sum + item.price, 0);
+  const allLive = ids.length > 0 && ids.every((id) => liveByKey.has(id));
 
   return (
     <ShopPage
@@ -84,6 +126,18 @@ function Basket() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
+              {allLive ? (
+                <Link
+                  to="/checkout"
+                  className="shop-meta rounded-sm bg-timber/85 px-6 py-3.5 text-lamplight"
+                  style={{
+                    boxShadow:
+                      "var(--shadow-plate), inset 0 0 0 1px color-mix(in oklab, var(--brass) 34%, transparent)",
+                  }}
+                >
+                  Secure checkout
+                </Link>
+              ) : null}
               <a
                 href={SHOP.phoneHref}
                 className="shop-meta rounded-sm bg-timber/85 px-6 py-3.5 text-lamplight transition-colors duration-200 ease-[var(--ease-brass)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass"
@@ -103,8 +157,18 @@ function Basket() {
               </button>
             </div>
           </div>
+          {!allLive ? (
+            <p className="mt-4 text-sm leading-6 text-foreground/55">
+              Example items are display-only. Ring the shop for current availability.
+            </p>
+          ) : null}
         </>
       )}
     </ShopPage>
   );
+}
+
+function normalizeRoom(value: string): StockItem["room"] {
+  if (value === "arcade" || value === "sound-vision" || value === "curiosity") return value;
+  return "library";
 }

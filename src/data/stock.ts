@@ -18,7 +18,7 @@ export type StockItem = {
   /** Finer sorting inside the shelf: genre, platform, format. */
   tags: string[];
   price: number;
-  condition: "Good" | "Very good" | "Excellent" | "Well read" | "Boxed";
+  condition: string;
   year?: number;
   /** A line the shop would actually say about this copy. */
   note: string;
@@ -27,6 +27,19 @@ export type StockItem = {
   featured?: boolean;
   /** Locked case at the back of the Library. */
   archive?: boolean;
+  /** Database-backed listings carry their permanent public identity and photos. */
+  slug?: string;
+  sku?: string;
+  imageUrl?: string;
+  gallery?: string[];
+  barcode?: string;
+  publisher?: string;
+  platform?: string;
+  quantity?: number;
+  availability?: "available" | "reserved" | "sold";
+  collectionOnly?: boolean;
+  deliveryEligible?: boolean;
+  clickCollectEligible?: boolean;
 };
 
 export const STOCK: StockItem[] = [

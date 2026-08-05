@@ -8,6 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.env
+.env.*
+!.env.example
 dist
 dist-ssr
 .output
@@ -30,3 +33,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime uploads and test artifacts
+public/uploads/
+coverage/
+playwright-report/
+test-results/
+.playwright-cli/
+screenshots/
+output/
+.next/
+.claude-flow/
+tsconfig.tsbuildinfo
+lovable-key-files.zip

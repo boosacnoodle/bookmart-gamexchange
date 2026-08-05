@@ -77,14 +77,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Bookmart & GameXchange" },
+      {
+        name: "description",
+        content:
+          "Second-hand books, retro games, music, film and collectables from 73 Talbot Street, Dublin 1.",
+      },
+      { name: "author", content: "Bookmart & GameXchange" },
+      { property: "og:title", content: "Bookmart & GameXchange" },
+      {
+        property: "og:description",
+        content: "Second-hand books, retro games, music, film and collectables in Dublin 1.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {

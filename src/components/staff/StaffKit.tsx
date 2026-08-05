@@ -122,9 +122,7 @@ export function Row({
         ) : null}
       </span>
       {meta ? (
-        <span
-          className={`shop-meta shrink-0 ${flag ? "text-lamplight/80" : "text-foreground/40"}`}
-        >
+        <span className={`shop-meta shrink-0 ${flag ? "text-lamplight/80" : "text-foreground/40"}`}>
           {meta}
         </span>
       ) : null}
@@ -156,7 +154,8 @@ export function Row({
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-sm px-4 py-5 text-[0.88rem] leading-[1.6] text-foreground/45"
+    <p
+      className="rounded-sm px-4 py-5 text-[0.88rem] leading-[1.6] text-foreground/45"
       style={{ boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--brass) 10%, transparent)" }}
     >
       {children}
@@ -209,6 +208,7 @@ export function ChoiceRow({
           <button
             key={option}
             type="button"
+            aria-label={option}
             aria-pressed={on}
             onClick={() => onChange(option)}
             className={`min-h-[3rem] rounded-sm px-4 text-[0.95rem] transition-colors ${

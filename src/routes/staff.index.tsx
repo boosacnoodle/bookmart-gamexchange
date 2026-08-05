@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 import { BigButton, Field, inputClass, inputShadow } from "@/components/staff/StaffKit";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { signIn, useStaff } from "@/lib/staff";
+import { loginStaff } from "@/lib/auth.server";
+import { useStaff } from "@/lib/staff";
 
 export const Route = createFileRoute("/staff/")({
   head: () => ({
@@ -26,6 +27,7 @@ function StaffSignIn() {
   const [name, setName] = useState("");
   const [pin, setPin] = useState("");
   const [problem, setProblem] = useState("");
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     if (staff) navigate({ to: "/staff/today", replace: true });
@@ -38,7 +40,7 @@ function StaffSignIn() {
     >
       <form
         className="space-y-6"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
           if (name.trim().length < 2) {
             setProblem("Put your name in first.");
@@ -49,8 +51,19 @@ function StaffSignIn() {
             return;
           }
           setProblem("");
-          signIn(name.trim());
-          navigate({ to: "/staff/today" });
+          setPending(true);
+          try {
+            const result = await loginStaff({ data: { name: name.trim(), password: pin } });
+            if (!result.ok) {
+              setProblem(result.message);
+              return;
+            }
+            navigate({ to: "/staff/today", replace: true });
+          } catch (error) {
+            setProblem(error instanceof Error ? error.message : "Sign-in failed. Try again.");
+          } finally {
+            setPending(false);
+          }
         }}
       >
         <Field label="Your name">
@@ -67,7 +80,7 @@ function StaffSignIn() {
         <Field label="Shop code" hint="The four numbers taped inside the till drawer.">
           <input
             value={pin}
-            onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))}
+            onChange={(event) => setPin(event.target.value.slice(0, 128))}
             inputMode="numeric"
             autoComplete="off"
             placeholder="••••"
@@ -80,7 +93,9 @@ function StaffSignIn() {
           {problem}
         </p>
 
-        <BigButton type="submit">Sign in</BigButton>
+        <BigButton type="submit" disabled={pending}>
+          {pending ? "Signing in…" : "Sign in"}
+        </BigButton>
 
         <p className="text-[0.82rem] leading-[1.6] text-foreground/40">
           Forgotten the code? Ask whoever opened up this morning.

@@ -59,8 +59,8 @@ export function StaffShell({
           {staff ? (
             <button
               type="button"
-              onClick={() => {
-                signOut();
+              onClick={async () => {
+                await signOut();
                 navigate({ to: "/staff", replace: true });
               }}
               className="shop-meta inline-flex min-h-11 items-center px-2 text-foreground/45 transition-colors hover:text-lamplight"

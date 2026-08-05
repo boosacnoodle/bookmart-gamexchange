@@ -1,0 +1,12 @@
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    include: ["src/**/*.test.{ts,tsx}"],
+    exclude: ["tests/e2e/**", "node_modules/**", ".output/**"],
+    environment: "node",
+    coverage: {
+      reporter: ["text", "html"],
+    },
+  },
+});

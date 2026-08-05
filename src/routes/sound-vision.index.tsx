@@ -2,12 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { RoomPage } from "@/components/shop/RoomPage";
 import { getRoom } from "@/data/rooms";
+import { getRoomInventory } from "@/lib/catalog.server";
 
 const TITLE = "Sound & Vision — vinyl, CDs, DVDs & Blu-rays | Bookmart & GameXchange";
 const DESCRIPTION =
   "Dig through the crates in Sound & Vision: second-hand vinyl, CDs, DVDs, Blu-rays and soundtracks, all graded and played through in the shop.";
 
 export const Route = createFileRoute("/sound-vision/")({
+  loader: () => getRoomInventory({ data: { room: "sound-vision" } }),
   validateSearch: (search: Record<string, unknown>) => ({
     shelf: typeof search["shelf"] === "string" ? (search["shelf"] as string) : undefined,
   }),
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/sound-vision/")({
 
 function SoundVisionRoom() {
   const { shelf } = Route.useSearch();
+  const inventory = Route.useLoaderData();
 
   return (
     <RoomPage
@@ -35,6 +38,7 @@ function SoundVisionRoom() {
       shelfHeading="In the crates"
       featuredHeading="On the turntable this week"
       recentHeading="Just come in"
+      inventory={inventory}
     />
   );
 }

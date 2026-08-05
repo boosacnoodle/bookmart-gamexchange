@@ -1,15 +1,13 @@
 /**
- * The back office, kept on the shop phone.
- *
- * A prototype store: the signed-in shopkeeper and the items being added live
- * in localStorage so the whole flow can be walked through on a real Android
- * handset before any of it is wired to the till system.
+ * Small resumable intake drafts stay on the shop phone. The database remains
+ * authoritative: lookup and publication are server actions and every live
+ * item is committed before the success screen appears.
  */
 import { useEffect, useState } from "react";
 
 import type { RoomId } from "@/data/rooms";
+import { getCurrentUser, logoutStaff } from "@/lib/auth.server";
 
-const SESSION_KEY = "bookmart.staff.session";
 const DRAFTS_KEY = "bookmart.staff.drafts";
 const PUBLISHED_KEY = "bookmart.staff.published";
 const EVENT = "bookmart:staff";
@@ -21,6 +19,10 @@ export type StaffItem = {
   kind: ItemKind;
   /** What is printed on the back, if it had one. */
   barcode?: string;
+  barcodeType?: string;
+  intakeId?: string;
+  candidate?: IntakeCandidate;
+  duplicates?: IntakeDuplicate[];
   photos: number;
   title: string;
   maker: string;
@@ -31,18 +33,90 @@ export type StaffItem = {
   condition: string;
   price: string;
   note?: string;
+  included?: string;
+  missing?: string;
+  deliveryEligible?: boolean;
+  clickCollectEligible?: boolean;
+  photoData?: string[];
+  publishedSlug?: string;
+  publishedSku?: string;
+  publishedPath?: string;
+  publishedProductId?: string;
   /** When it was last touched, so the dashboard can order the lists. */
   updated: string;
 };
 
+export type IntakeCandidate = {
+  id: string;
+  provider: string;
+  category: string;
+  title: string;
+  creator: string | null;
+  publisher: string | null;
+  platform: string | null;
+  format: string | null;
+  isbn10: string | null;
+  isbn13: string | null;
+  ean: string | null;
+  upc: string | null;
+  publicationDate: string | null;
+  edition: string | null;
+  coverImageUrl: string | null;
+  description: string | null;
+  subjects: string[];
+};
+
+export type IntakeDuplicate = {
+  id: string;
+  title: string;
+  sku: string;
+  state: string;
+  publicPath: string;
+};
+
 export const ITEM_KINDS: { id: ItemKind; label: string; hint: string; room: RoomId }[] = [
-  { id: "book", label: "A book", hint: "Paperback, hardback, anything off the shelves", room: "library" },
-  { id: "game", label: "A game or console", hint: "Nintendo, PlayStation, Xbox, retro", room: "arcade" },
-  { id: "music-film", label: "Music or a film", hint: "Vinyl, CDs, DVD, Blu-ray", room: "sound-vision" },
-  { id: "rare", label: "Something rare or odd", hint: "Collectibles, cards, curiosities", room: "curiosity" },
+  {
+    id: "book",
+    label: "A book",
+    hint: "Paperback, hardback, anything off the shelves",
+    room: "library",
+  },
+  {
+    id: "game",
+    label: "A game or console",
+    hint: "Nintendo, PlayStation, Xbox, retro",
+    room: "arcade",
+  },
+  {
+    id: "music-film",
+    label: "Music or a film",
+    hint: "Vinyl, CDs, DVD, Blu-ray",
+    room: "sound-vision",
+  },
+  {
+    id: "rare",
+    label: "Something rare or odd",
+    hint: "Collectibles, cards, curiosities",
+    room: "curiosity",
+  },
 ];
 
-export const CONDITIONS = ["Excellent", "Very good", "Good", "Well read", "Boxed"];
+export const BOOK_CONDITIONS = [
+  "Like New",
+  "Very Good",
+  "Good",
+  "Acceptable",
+  "Poor / Reading Copy",
+  "Collectible",
+];
+export const GENERAL_CONDITIONS = [
+  "New / Sealed",
+  "Like New",
+  "Very Good",
+  "Good",
+  "Acceptable",
+  "For Parts / Repair",
+];
 
 export const SHELVES: Record<RoomId, string[]> = {
   library: ["Fiction", "Non-fiction", "Children's", "Irish writing"],
@@ -72,16 +146,8 @@ function safeWrite(key: string, value: unknown) {
 
 /* ---- who is behind the counter ------------------------------------- */
 
-export function signIn(name: string) {
-  safeWrite(SESSION_KEY, { name, since: new Date().toISOString() });
-}
-
-export function signOut() {
-  try {
-    window.localStorage.removeItem(SESSION_KEY);
-  } catch {
-    /* ignore */
-  }
+export async function signOut() {
+  await logoutStaff();
   window.dispatchEvent(new Event(EVENT));
 }
 
@@ -89,7 +155,11 @@ export function signOut() {
 export function useStaff(): { name: string } | null | undefined {
   const [staff, setStaff] = useState<{ name: string } | null | undefined>(undefined);
   useEffect(() => {
-    const sync = () => setStaff(safeRead<{ name: string } | null>(SESSION_KEY, null));
+    const sync = () => {
+      void getCurrentUser()
+        .then((user) => setStaff(user ? { name: user.name } : null))
+        .catch(() => setStaff(null));
+    };
     sync();
     window.addEventListener(EVENT, sync);
     window.addEventListener("storage", sync);
@@ -120,6 +190,8 @@ export function startItem(kind: ItemKind): StaffItem {
     shelf: SHELVES[preset.room][0]!,
     condition: "Very good",
     price: "",
+    deliveryEligible: true,
+    clickCollectEligible: true,
     updated: new Date().toISOString(),
   };
   safeWrite(DRAFTS_KEY, [item, ...readItems(DRAFTS_KEY)]);
@@ -156,6 +228,33 @@ export function publishItem(id: string) {
   );
 }
 
+export function completeItem(
+  id: string,
+  result: { id: string; slug: string; sku: string; publicPath: string },
+) {
+  const drafts = readItems(DRAFTS_KEY);
+  const item = drafts.find((draft) => draft.id === id);
+  if (!item) return;
+  safeWrite(
+    PUBLISHED_KEY,
+    [
+      {
+        ...item,
+        publishedProductId: result.id,
+        publishedSlug: result.slug,
+        publishedSku: result.sku,
+        publishedPath: result.publicPath,
+        updated: new Date().toISOString(),
+      },
+      ...readItems(PUBLISHED_KEY),
+    ].slice(0, 40),
+  );
+  safeWrite(
+    DRAFTS_KEY,
+    drafts.filter((draft) => draft.id !== id),
+  );
+}
+
 function useItems(key: string): StaffItem[] {
   const [items, setItems] = useState<StaffItem[]>([]);
   useEffect(() => {
@@ -184,21 +283,23 @@ export function useCurrentItem(): StaffItem | undefined {
   return useDrafts()[0];
 }
 
-/** Photographs stay in memory for the life of the page — a prototype detail. */
-const PHOTOS = new Map<string, string[]>();
-
 export function addPhotos(id: string, urls: string[]) {
-  PHOTOS.set(id, [...(PHOTOS.get(id) ?? []), ...urls]);
-  saveItem(id, { photos: PHOTOS.get(id)!.length });
+  const item = readItems(DRAFTS_KEY).find((draft) => draft.id === id);
+  const photos = [...(item?.photoData ?? []), ...urls].slice(0, 6);
+  saveItem(id, { photos: photos.length, photoData: photos });
 }
 
 export function itemPhotos(id: string) {
-  return PHOTOS.get(id) ?? [];
+  return readItems(DRAFTS_KEY).find((draft) => draft.id === id)?.photoData ?? [];
 }
 
 export function removePhoto(id: string, url: string) {
-  PHOTOS.set(id, (PHOTOS.get(id) ?? []).filter((u) => u !== url));
-  saveItem(id, { photos: PHOTOS.get(id)!.length });
+  const photos = itemPhotos(id).filter((photo) => photo !== url);
+  saveItem(id, { photos: photos.length, photoData: photos });
+}
+
+export function setPhotoOrder(id: string, photos: string[]) {
+  saveItem(id, { photoData: photos, photos: photos.length });
 }
 
 export function whenTouched(iso: string) {

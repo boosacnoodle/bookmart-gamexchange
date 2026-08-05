@@ -297,28 +297,26 @@ function TakeItHome({ item, sold }: { item: StockItem; sold: boolean }) {
     <section aria-label="Getting it home" className="mt-10 border-t border-brass/12 pt-7">
       <h2 className="shop-meta text-brass/55">Getting it home</h2>
       <ul className="mt-4 space-y-4">
-        <li>
-          <p className="sign-plate text-[1rem] text-lamplight/85">
-            Click &amp; collect — free
-          </p>
-          <p className="measure mt-1 text-[0.86rem] leading-[1.6] text-foreground/60">
-            {sold
-              ? `Gone from ${item.shelf}, but ask and we will watch for another.`
-              : `Held at the counter for three days. ${SHOP.street}, ${SHOP.city} — ${SHOP.closingLine.toLowerCase()}.`}
-          </p>
-        </li>
-        <li>
-          <p className="sign-plate text-[1rem] text-lamplight/85">Posted in Ireland — €4.50</p>
-          <p className="measure mt-1 text-[0.86rem] leading-[1.6] text-foreground/60">
-            Wrapped by hand, out the next working day. Free over €50.
-          </p>
-        </li>
-        <li>
-          <p className="sign-plate text-[1rem] text-lamplight/85">Posted to the UK &amp; EU — €12</p>
-          <p className="measure mt-1 text-[0.86rem] leading-[1.6] text-foreground/60">
-            Tracked, three to seven days. Fragile items double-boxed.
-          </p>
-        </li>
+        {item.clickCollectEligible !== false ? (
+          <li>
+            <p className="sign-plate text-[1rem] text-lamplight/85">Click &amp; collect — free</p>
+            <p className="measure mt-1 text-[0.86rem] leading-[1.6] text-foreground/60">
+              {sold
+                ? `Gone from ${item.shelf}, but ask and we will watch for another.`
+                : `Held at the counter for three days. ${SHOP.street}, ${SHOP.city} — ${SHOP.closingLine.toLowerCase()}.`}
+            </p>
+          </li>
+        ) : null}
+        {item.deliveryEligible !== false && !item.collectionOnly ? (
+          <li>
+            <p className="sign-plate text-[1rem] text-lamplight/85">
+              Posted in Ireland — calculated at checkout
+            </p>
+            <p className="measure mt-1 text-[0.86rem] leading-[1.6] text-foreground/60">
+              Carefully packed and sent to an Irish address.
+            </p>
+          </li>
+        ) : null}
       </ul>
     </section>
   );
@@ -407,28 +405,36 @@ function CounterActions({
   reserved: boolean;
 }) {
   const basket = useList("basket");
-  const watching = useList("wishlist").includes(item.id);
-  const onCounter = basket.includes(item.id);
+  const listKey = item.slug ?? item.id;
+  const watching = useList("wishlist").includes(listKey);
+  const onCounter = basket.includes(listKey);
+  const exampleOnly = !item.slug;
 
   return (
     <div className="mt-10">
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          disabled={sold}
-          onClick={() => (onCounter ? removeFrom("basket", item.id) : addTo("basket", item.id))}
+          disabled={sold || exampleOnly}
+          onClick={() => (onCounter ? removeFrom("basket", listKey) : addTo("basket", listKey))}
           className="shop-meta rounded-sm bg-timber/85 px-6 py-3.5 text-lamplight transition-[box-shadow,color] duration-200 ease-[var(--ease-brass)] hover:text-lamplight disabled:cursor-not-allowed disabled:text-foreground/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass"
           style={{
             boxShadow:
               "var(--shadow-plate), inset 0 0 0 1px color-mix(in oklab, var(--brass) 34%, transparent)",
           }}
         >
-          {sold ? "Sold" : onCounter ? "On the counter — take it back off" : "Place on the counter"}
+          {sold
+            ? "Sold"
+            : exampleOnly
+              ? "Example item"
+              : onCounter
+                ? "On the counter — take it back off"
+                : "Place on the counter"}
         </button>
 
         <button
           type="button"
-          onClick={() => toggleIn("wishlist", item.id)}
+          onClick={() => toggleIn("wishlist", listKey)}
           className="shop-meta rounded-sm px-5 py-3.5 text-brass/70 transition-colors duration-200 ease-[var(--ease-brass)] hover:text-lamplight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass/60"
         >
           {watching ? "We’re keeping an eye out" : "Ask us to keep an eye out"}
@@ -436,15 +442,17 @@ function CounterActions({
       </div>
 
       <p aria-live="polite" className="shop-meta mt-3 min-h-[1.2em] text-foreground/45">
-        {sold
-          ? "This one has gone. Ask and we will watch for another."
-          : reserved
-            ? "Held for somebody until Friday. Ask at the counter."
-            : onCounter
-              ? "Left on the counter for you."
-              : watching
-                ? "Noted at the counter."
-                : ""}
+        {exampleOnly
+          ? "This sample shows how a real listing will look. Ask the shop about current stock."
+          : sold
+            ? "This one has gone. Ask and we will watch for another."
+            : reserved
+              ? "Held for somebody until Friday. Ask at the counter."
+              : onCounter
+                ? "Left on the counter for you."
+                : watching
+                  ? "Noted at the counter."
+                  : ""}
       </p>
     </div>
   );

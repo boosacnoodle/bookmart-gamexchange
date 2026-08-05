@@ -21,6 +21,8 @@ export function SearchField({
   return (
     <form
       role="search"
+      action="/search"
+      method="get"
       onSubmit={(e) => {
         e.preventDefault();
         const q = value.trim();
@@ -37,6 +39,7 @@ export function SearchField({
         <span className="sr-only">Search the shop</span>
         <input
           type="search"
+          name="q"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}

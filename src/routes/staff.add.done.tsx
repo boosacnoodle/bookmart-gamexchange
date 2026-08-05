@@ -34,7 +34,9 @@ function DoneStep() {
         <span
           aria-hidden="true"
           className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-timber/90 text-lamplight"
-          style={{ boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--brass) 45%, transparent)" }}
+          style={{
+            boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--brass) 45%, transparent)",
+          }}
         >
           <Check className="h-6 w-6" />
         </span>
@@ -51,10 +53,30 @@ function DoneStep() {
 
       <div className="mt-7 space-y-3">
         <BigLink to="/staff/add">Add another item</BigLink>
-        {room ? (
-          <BigLink to={room.href} tone="quiet">
-            See it on the website
-          </BigLink>
+        {item?.publishedPath ? (
+          <a
+            href={item.publishedPath}
+            className="sign-plate flex min-h-[3.5rem] w-full items-center justify-center rounded-sm px-6 text-center text-[1.05rem] text-brass/75"
+            style={{
+              boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--brass) 20%, transparent)",
+            }}
+          >
+            View live listing
+          </a>
+        ) : null}
+        {item?.publishedProductId ? (
+          <a
+            href={`/staff/label/${item.publishedProductId}`}
+            className="sign-plate flex min-h-[3.5rem] w-full items-center justify-center rounded-sm px-6 text-center text-[1.05rem] text-brass/75"
+            style={{
+              boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--brass) 20%, transparent)",
+            }}
+          >
+            View / print QR label
+          </a>
+        ) : null}
+        {item?.publishedSku ? (
+          <p className="shop-meta text-center text-brass/55">SKU: {item.publishedSku}</p>
         ) : null}
         <BigLink to="/staff/today" tone="quiet">
           Back to today

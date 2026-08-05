@@ -58,9 +58,9 @@ export function Rooms() {
                 alt={`${room.name}: ${room.note}`}
                 width={1280}
                 height={960}
-                loading="lazy"
+                loading="eager"
                 decoding="async"
-                className="room-light absolute inset-0 -z-10 h-full w-full object-cover"
+                className="room-light absolute inset-0 z-0 h-full w-full object-cover"
                 style={{
                   transform: isActive ? "scale(1.025)" : "scale(1)",
                 }}
@@ -69,14 +69,14 @@ export function Rooms() {
               {/* The room's own colour temperature, painted with light */}
               <div
                 aria-hidden="true"
-                className="scene-grade room-light pointer-events-none absolute inset-0 -z-10"
+                className="scene-grade room-light pointer-events-none absolute inset-0 z-0"
                 style={{ background: room.grade, opacity: isActive ? 0.95 : 0.8 }}
               />
 
               {/* The room's own light, raised on attention */}
               <div
                 aria-hidden="true"
-                className="room-light pointer-events-none absolute inset-0 -z-10"
+                className="room-light pointer-events-none absolute inset-0 z-0"
                 style={{
                   background: `radial-gradient(24rem 22rem at 50% 42%, color-mix(in oklab, ${room.glow} 30%, transparent), transparent 72%)`,
                   mixBlendMode: "soft-light",
@@ -85,17 +85,11 @@ export function Rooms() {
               />
               <div
                 aria-hidden="true"
-                className="scene-seat pointer-events-none absolute inset-0 -z-10"
+                className="scene-seat pointer-events-none absolute inset-0 z-0"
               />
 
-              <div className="relative p-7 sm:p-8">
-                {room.id === "library" ? (
-                  <h3 className="sign-plate text-[1.6rem] leading-[1.15] text-lamplight sm:text-[1.8rem]">
-                    {room.name}
-                  </h3>
-                ) : null}
-
-                <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+              <div className="relative z-10 p-7 sm:p-8">
+                <ul className="flex flex-wrap gap-x-4 gap-y-2">
                   {room.tags.map((tag) => (
                     <li key={tag} className="shop-meta text-brass/65">
                       {tag}
@@ -121,6 +115,7 @@ export function Rooms() {
       <div className="mx-auto max-w-[1800px] px-6 py-14 sm:px-8 md:py-16">
         <Link
           to="/library"
+          search={{ shelf: undefined }}
           hash="archive"
           className="group relative isolate flex flex-col gap-5 overflow-hidden rounded-sm bg-timber-deep/70 p-7 transition-shadow duration-200 ease-[var(--ease-brass)] hover:shadow-[var(--shadow-case),0_0_0_1px_color-mix(in_oklab,var(--brass)_34%,transparent)_inset] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass sm:flex-row sm:items-center sm:justify-between sm:p-9"
           style={{ boxShadow: "var(--shadow-case)" }}
@@ -151,8 +146,8 @@ export function Rooms() {
                 The Archive
               </h3>
               <p className="measure mt-3 text-[0.875rem] leading-[1.7] text-muted-foreground">
-                A locked glass cabinet. First editions, signed copies and books we
-                had to think twice about selling. Ask and we will open it.
+                A locked glass cabinet. First editions, signed copies and books we had to think
+                twice about selling. Ask and we will open it.
               </p>
             </div>
           </div>

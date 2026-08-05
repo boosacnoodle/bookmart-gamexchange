@@ -3,11 +3,11 @@ import { useState } from "react";
 
 import { ChoiceRow, Empty, Row, inputClass, inputShadow } from "@/components/staff/StaffKit";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { getRoom } from "@/data/rooms";
-import { formatPrice, STOCK } from "@/data/stock";
-import { itemName, usePublished, whenTouched } from "@/lib/staff";
+import { formatPrice } from "@/data/stock";
+import { getStaffInventory } from "@/lib/intake.server";
 
 export const Route = createFileRoute("/staff/stock")({
+  loader: () => getStaffInventory(),
   head: () => ({
     meta: [
       { title: "Stock — Bookmart back office" },
@@ -25,12 +25,20 @@ export const Route = createFileRoute("/staff/stock")({
 const ROOM_FILTERS = ["Everything", "Books", "Games", "Music & Film", "Rare & Collectible"];
 
 function StockList() {
-  const published = usePublished();
+  const inventory = Route.useLoaderData();
   const [filter, setFilter] = useState("Everything");
   const [query, setQuery] = useState("");
 
-  const rows = STOCK.filter((item) => {
-    const room = getRoom(item.room).name;
+  const rows = inventory.filter((item) => {
+    const room =
+      (
+        {
+          library: "Books",
+          arcade: "Games",
+          "sound-vision": "Music & Film",
+          curiosity: "Rare & Collectible",
+        } as Record<string, string>
+      )[item.room] ?? item.room;
     if (filter !== "Everything" && room !== filter) return false;
     if (!query.trim()) return true;
     const needle = query.trim().toLowerCase();
@@ -56,22 +64,6 @@ function StockList() {
         <ChoiceRow options={ROOM_FILTERS} value={filter} onChange={setFilter} />
       </div>
 
-      {published.length > 0 ? (
-        <section className="mt-8">
-          <h2 className="shop-meta text-brass/55">Added by you today</h2>
-          <div className="mt-3 space-y-2">
-            {published.map((item) => (
-              <Row
-                key={item.id}
-                title={itemName(item)}
-                detail={`${item.shelf} · €${item.price || "0"}`}
-                meta={whenTouched(item.updated)}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
       <section className="mt-8">
         <h2 className="shop-meta text-brass/55">{rows.length} items</h2>
         <div className="mt-3 space-y-2">
@@ -83,7 +75,7 @@ function StockList() {
                 key={item.id}
                 title={item.title}
                 detail={`${item.maker} · ${item.shelf}`}
-                meta={formatPrice(item.price)}
+                meta={formatPrice(item.priceMinor / 100)}
               />
             ))
           )}

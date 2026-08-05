@@ -103,7 +103,9 @@ const COUNTER: Record<string, CounterRecord> = {
     note: "Four stickers short of complete, and we know exactly which four. If you have them, come and talk to us.",
     marks: ["Four stickers missing.", "Spine of album intact."],
   },
-  "cc-e03": { note: "Biro on graph paper, folded into eight. We have no idea either, and that is the appeal." },
+  "cc-e03": {
+    note: "Biro on graph paper, folded into eight. We have no idea either, and that is the appeal.",
+  },
   "cc-u04": { marks: ["Glass sound.", "Base re-felted in-store."] },
 };
 
@@ -137,24 +139,45 @@ type DrawerCard = {
 };
 
 const DRAWER: Record<string, DrawerCard> = {
-  "lib-001": { publisher: "Penguin Books", edition: "Penguin paperback", barcode: "978-0-14-118268-2" },
+  "lib-001": {
+    publisher: "Penguin Books",
+    edition: "Penguin paperback",
+    barcode: "978-0-14-118268-2",
+  },
   "lib-002": { publisher: "Panther / Granada", edition: "Reprint", barcode: "978-0-586-04409-6" },
   "lib-003": { publisher: "Viking", edition: "First UK paperback", barcode: "978-0-14-016777-7" },
-  "lib-004": { publisher: "Fourth Estate", edition: "Hardback with jacket", barcode: "978-0-00-723018-1" },
+  "lib-004": {
+    publisher: "Fourth Estate",
+    edition: "Hardback with jacket",
+    barcode: "978-0-00-723018-1",
+  },
   "lib-007": { publisher: "Bloomsbury", barcode: "978-0-7475-3269-9" },
   "lib-008": { publisher: "Puffin", edition: "1980s Puffin printing" },
   "lib-013": { publisher: "Dublin: Talbot Press", edition: "Local imprint" },
   "arc-001": { publisher: "The Bodley Head", edition: "Bodley Head edition" },
   "arc-002": { publisher: "Faber & Faber", edition: "Signed to title page" },
   "arc-003": { edition: "Nineteenth-century boards" },
-  "arc-n01": { publisher: "Nintendo", region: "PAL", contents: "Cartridge only", barcode: "045496870034" },
+  "arc-n01": {
+    publisher: "Nintendo",
+    region: "PAL",
+    contents: "Cartridge only",
+    barcode: "045496870034",
+  },
   "arc-n03": { publisher: "Nintendo", region: "PAL", contents: "Disc, case and manual" },
   "arc-n04": { publisher: "Nintendo", region: "PAL", contents: "Cartridge only, new save battery" },
   "arc-p01": { publisher: "Konami", region: "PAL", contents: "Two discs and manual" },
   "arc-p02": { publisher: "Sony Computer Entertainment", region: "PAL", contents: "Disc and case" },
   "arc-r03": { publisher: "Sega", region: "PAL", contents: "Console, one pad, original PSU" },
-  "sv-v01": { publisher: "Warner Bros. Records", edition: "UK pressing", contents: "LP and inner sleeve" },
-  "sv-v03": { publisher: "Island Records", edition: "UK pressing", contents: "LP and original inner" },
+  "sv-v01": {
+    publisher: "Warner Bros. Records",
+    edition: "UK pressing",
+    contents: "LP and inner sleeve",
+  },
+  "sv-v03": {
+    publisher: "Island Records",
+    edition: "UK pressing",
+    contents: "LP and original inner",
+  },
   "sv-c03": { publisher: "Claddagh Records", edition: "Early Irish pressing" },
   "sv-d02": { edition: "Steelbook", region: "Region B", contents: "Two discs" },
   "sv-s03": { edition: "Japanese pressing with obi", region: "NTSC-J", contents: "Four discs" },
@@ -166,7 +189,7 @@ const DRAWER: Record<string, DrawerCard> = {
 
 /** A stable in-house reference, the kind biro'd onto the inside of a cover. */
 export function catalogueRef(item: StockItem) {
-  return `BM-${item.id.toUpperCase()}`;
+  return item.sku ?? `BM-${item.id.toUpperCase()}`;
 }
 
 /**
@@ -175,6 +198,17 @@ export function catalogueRef(item: StockItem) {
  */
 export function objectGallery(item: StockItem) {
   const room = getRoom(item.room);
+  if (item.gallery?.length || item.imageUrl) {
+    const images = item.gallery?.length ? item.gallery : [item.imageUrl!];
+    return images.map((src, index) => ({
+      src,
+      label: index === 0 ? "On the counter" : `View ${index + 1}`,
+      caption:
+        index === 0
+          ? "The actual shop listing image. One copy only, so what you see is the copy you get."
+          : "Another view supplied during intake.",
+    }));
+  }
   return [
     {
       src: OBJECT_PLATE[item.room],
@@ -204,7 +238,8 @@ export function objectSpecs(item: StockItem) {
   if (item.room === "arcade" && !item.archive) specs.push({ label: "Platform", value: item.maker });
   if (item.room === "sound-vision") specs.push({ label: "Artist", value: item.maker });
   if (item.room === "curiosity") specs.push({ label: "Maker", value: item.maker });
-  if (card?.publisher) specs.push({ label: book ? "Publisher" : "Label", value: card.publisher });
+  const publisher = item.publisher ?? card?.publisher;
+  if (publisher) specs.push({ label: book ? "Publisher" : "Label", value: publisher });
   if (item.year) specs.push({ label: "Year", value: String(item.year) });
   if (card?.edition) specs.push({ label: "Edition", value: card.edition });
   if (card?.contents) specs.push({ label: "In the box", value: card.contents });
@@ -219,7 +254,8 @@ export function objectDetails(item: StockItem) {
   const details: { label: string; value: string }[] = [
     { label: "Our reference", value: catalogueRef(item) },
   ];
-  if (card?.barcode) details.push({ label: book ? "ISBN" : "Barcode", value: card.barcode });
+  const barcode = item.barcode ?? card?.barcode;
+  if (barcode) details.push({ label: book ? "ISBN" : "Barcode", value: barcode });
   if (card?.region) details.push({ label: "Region", value: card.region });
   details.push({ label: "Category", value: `${getRoom(item.room).name} · ${item.shelf}` });
   details.push({ label: "Filed under", value: item.tags.join(", ") });
@@ -238,6 +274,7 @@ function slugify(value: string) {
 
 /** Title, year, and the format it came in — the way a card in a drawer reads. */
 export function itemSlug(item: StockItem) {
+  if (item.slug) return item.slug;
   const format = item.tags[item.tags.length - 1] ?? "";
   return slugify([item.title, item.year ?? "", format].join(" "));
 }
@@ -263,6 +300,7 @@ export function conditionMarks(item: StockItem) {
 }
 
 export function availability(item: StockItem): Availability {
+  if (item.availability) return item.availability;
   return COUNTER[item.id]?.availability ?? "available";
 }
 

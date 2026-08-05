@@ -19,6 +19,7 @@ export function RoomPage({
   featuredHeading,
   recentHeading = "Recently traded in",
   afterStock,
+  inventory,
 }: {
   room: Room;
   shelf?: string;
@@ -27,9 +28,13 @@ export function RoomPage({
   featuredHeading?: string;
   recentHeading?: string;
   afterStock?: React.ReactNode;
+  inventory?: StockItem[];
 }) {
   const navigate = useNavigate();
-  const stock = useMemo(() => ROOM_STOCK_BY_ID(room.id), [room.id]);
+  const stock = useMemo(
+    () => [...(inventory ?? []), ...ROOM_STOCK_BY_ID(room.id)],
+    [inventory, room.id],
+  );
 
   const active = shelf && room.shelves.includes(shelf) ? shelf : allLabel;
 
@@ -47,7 +52,11 @@ export function RoomPage({
   }, [active, allLabel, stock]);
 
   const featured = useMemo(
-    () => stock.filter((item) => item.featured).sort(byRecentlyTraded).slice(0, 3),
+    () =>
+      stock
+        .filter((item) => item.featured)
+        .sort(byRecentlyTraded)
+        .slice(0, 3),
     [stock],
   );
   const recent = useMemo(() => [...stock].sort(byRecentlyTraded).slice(0, 4), [stock]);

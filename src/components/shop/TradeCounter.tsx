@@ -27,9 +27,8 @@ export function TradeCounter() {
             The Trade Counter
           </h2>
           <p className="measure mt-4 text-[0.95rem] leading-[1.7] text-foreground/75">
-            Bring in books, games, consoles, vinyl or films. We will look at
-            everything, tell you honestly what it is worth, and pay in cash or
-            credit against anything in the shop.
+            Bring in books, games, consoles, vinyl or films. We will look at everything, tell you
+            honestly what it is worth, and pay in cash or credit against anything in the shop.
           </p>
 
           <Link
@@ -110,11 +109,11 @@ export function TradeCounter() {
         </dl>
       </div>
 
-      <div style={{ boxShadow: "inset 0 1px 0 color-mix(in oklab, var(--brass) 10%, transparent)" }}>
+      <div
+        style={{ boxShadow: "inset 0 1px 0 color-mix(in oklab, var(--brass) 10%, transparent)" }}
+      >
         <div className="mx-auto flex max-w-[1800px] flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-8">
-          <p className="pixel-label text-brass/45">
-            Bookmart &amp; GameXchange &middot; Dublin
-          </p>
+          <p className="pixel-label text-brass/45">Bookmart &amp; GameXchange &middot; Dublin</p>
           <p className="text-[0.8rem] leading-[1.6] text-muted-foreground/80">
             One copy of everything. Then it is gone.
           </p>

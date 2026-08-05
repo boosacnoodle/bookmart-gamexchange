@@ -5,12 +5,14 @@ import { RoomPage } from "@/components/shop/RoomPage";
 import { StockCard } from "@/components/shop/StockCard";
 import { getRoom } from "@/data/rooms";
 import { ARCHIVE_STOCK } from "@/data/stock";
+import { getRoomInventory } from "@/lib/catalog.server";
 
 const TITLE = "The Library — books at Bookmart & GameXchange, Dublin";
 const DESCRIPTION =
   "Second-hand books in the Library: fiction, non-fiction, children's and Irish writing, plus the locked Archive of rare and signed copies. One copy of everything.";
 
 export const Route = createFileRoute("/library/")({
+  loader: () => getRoomInventory({ data: { room: "library" } }),
   validateSearch: (search: Record<string, unknown>) => ({
     shelf: typeof search["shelf"] === "string" ? (search["shelf"] as string) : undefined,
   }),
@@ -29,6 +31,7 @@ export const Route = createFileRoute("/library/")({
 
 function LibraryRoom() {
   const { shelf } = Route.useSearch();
+  const inventory = Route.useLoaderData();
 
   return (
     <RoomPage
@@ -38,12 +41,13 @@ function LibraryRoom() {
       shelfHeading="On the shelves"
       featuredHeading="Featured arrivals"
       recentHeading="Recently traded books"
-      afterStock={<Archive />}
+      inventory={inventory.filter((item) => !item.archive)}
+      afterStock={<Archive inventory={inventory.filter((item) => item.archive)} />}
     />
   );
 }
 
-function Archive() {
+function Archive({ inventory }: { inventory: typeof ARCHIVE_STOCK }) {
   return (
     <section
       id="archive"
@@ -85,7 +89,7 @@ function Archive() {
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {ARCHIVE_STOCK.map((item) => (
+          {[...inventory, ...ARCHIVE_STOCK].map((item) => (
             <StockCard key={item.id} item={item} />
           ))}
         </div>

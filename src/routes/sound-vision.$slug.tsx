@@ -4,19 +4,25 @@ import { ObjectPage } from "@/components/shop/ObjectPage";
 import { ShopBar } from "@/components/shop/ShopBar";
 import { getRoom } from "@/data/rooms";
 import { availabilityLabel, findItem, shopkeeperNote } from "@/data/objects";
+import { getPublicProduct } from "@/lib/catalog.server";
 
 const ROOM = "sound-vision" as const;
 
 export const Route = createFileRoute("/sound-vision/$slug")({
-  loader: ({ params }) => {
-    const item = findItem(ROOM, params.slug);
+  loader: async ({ params }) => {
+    const item =
+      (await getPublicProduct({ data: { room: ROOM, slug: params.slug } })) ??
+      findItem(ROOM, params.slug);
     if (!item) throw notFound();
     return { item };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Not on the shelf — Bookmart & GameXchange" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Not on the shelf — Bookmart & GameXchange" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const { item } = loaderData;

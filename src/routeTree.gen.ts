@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as BasketRouteImport } from './routes/basket'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as OrderConfirmationRouteImport } from './routes/order-confirmation'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as TradeRouteImport } from './routes/trade'
 import { Route as WishlistRouteImport } from './routes/wishlist'
@@ -24,14 +26,18 @@ import { Route as LibrarySlugRouteImport } from './routes/library.$slug'
 import { Route as SoundVisionIndexRouteImport } from './routes/sound-vision.index'
 import { Route as SoundVisionSlugRouteImport } from './routes/sound-vision.$slug'
 import { Route as StaffIndexRouteImport } from './routes/staff.index'
+import { Route as StaffOrdersRouteImport } from './routes/staff.orders'
+import { Route as StaffSettingsRouteImport } from './routes/staff.settings'
 import { Route as StaffStockRouteImport } from './routes/staff.stock'
 import { Route as StaffTodayRouteImport } from './routes/staff.today'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api.stripe.webhook'
 import { Route as StaffAddIndexRouteImport } from './routes/staff.add.index'
 import { Route as StaffAddConfirmRouteImport } from './routes/staff.add.confirm'
 import { Route as StaffAddDetailsRouteImport } from './routes/staff.add.details'
 import { Route as StaffAddDoneRouteImport } from './routes/staff.add.done'
 import { Route as StaffAddPhotosRouteImport } from './routes/staff.add.photos'
 import { Route as StaffAddScanRouteImport } from './routes/staff.add.scan'
+import { Route as StaffLabelIdRouteImport } from './routes/staff.label.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +52,16 @@ const AccountRoute = AccountRouteImport.update({
 const BasketRoute = BasketRouteImport.update({
   id: '/basket',
   path: '/basket',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderConfirmationRoute = OrderConfirmationRouteImport.update({
+  id: '/order-confirmation',
+  path: '/order-confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -108,6 +124,16 @@ const StaffIndexRoute = StaffIndexRouteImport.update({
   path: '/staff/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StaffOrdersRoute = StaffOrdersRouteImport.update({
+  id: '/staff/orders',
+  path: '/staff/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffSettingsRoute = StaffSettingsRouteImport.update({
+  id: '/staff/settings',
+  path: '/staff/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StaffStockRoute = StaffStockRouteImport.update({
   id: '/staff/stock',
   path: '/staff/stock',
@@ -116,6 +142,11 @@ const StaffStockRoute = StaffStockRouteImport.update({
 const StaffTodayRoute = StaffTodayRouteImport.update({
   id: '/staff/today',
   path: '/staff/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StaffAddIndexRoute = StaffAddIndexRouteImport.update({
@@ -148,11 +179,18 @@ const StaffAddScanRoute = StaffAddScanRouteImport.update({
   path: '/staff/add/scan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StaffLabelIdRoute = StaffLabelIdRouteImport.update({
+  id: '/staff/label/$id',
+  path: '/staff/label/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/basket': typeof BasketRoute
+  '/checkout': typeof CheckoutRoute
+  '/order-confirmation': typeof OrderConfirmationRoute
   '/search': typeof SearchRoute
   '/trade': typeof TradeRoute
   '/wishlist': typeof WishlistRoute
@@ -160,6 +198,8 @@ export interface FileRoutesByFullPath {
   '/curiosity-cabinet/$slug': typeof CuriosityCabinetSlugRoute
   '/library/$slug': typeof LibrarySlugRoute
   '/sound-vision/$slug': typeof SoundVisionSlugRoute
+  '/staff/orders': typeof StaffOrdersRoute
+  '/staff/settings': typeof StaffSettingsRoute
   '/staff/stock': typeof StaffStockRoute
   '/staff/today': typeof StaffTodayRoute
   '/arcade/': typeof ArcadeIndexRoute
@@ -167,17 +207,21 @@ export interface FileRoutesByFullPath {
   '/library/': typeof LibraryIndexRoute
   '/sound-vision/': typeof SoundVisionIndexRoute
   '/staff/': typeof StaffIndexRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/staff/add/confirm': typeof StaffAddConfirmRoute
   '/staff/add/details': typeof StaffAddDetailsRoute
   '/staff/add/done': typeof StaffAddDoneRoute
   '/staff/add/photos': typeof StaffAddPhotosRoute
   '/staff/add/scan': typeof StaffAddScanRoute
+  '/staff/label/$id': typeof StaffLabelIdRoute
   '/staff/add/': typeof StaffAddIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/basket': typeof BasketRoute
+  '/checkout': typeof CheckoutRoute
+  '/order-confirmation': typeof OrderConfirmationRoute
   '/search': typeof SearchRoute
   '/trade': typeof TradeRoute
   '/wishlist': typeof WishlistRoute
@@ -185,6 +229,8 @@ export interface FileRoutesByTo {
   '/curiosity-cabinet/$slug': typeof CuriosityCabinetSlugRoute
   '/library/$slug': typeof LibrarySlugRoute
   '/sound-vision/$slug': typeof SoundVisionSlugRoute
+  '/staff/orders': typeof StaffOrdersRoute
+  '/staff/settings': typeof StaffSettingsRoute
   '/staff/stock': typeof StaffStockRoute
   '/staff/today': typeof StaffTodayRoute
   '/arcade': typeof ArcadeIndexRoute
@@ -192,11 +238,13 @@ export interface FileRoutesByTo {
   '/library': typeof LibraryIndexRoute
   '/sound-vision': typeof SoundVisionIndexRoute
   '/staff': typeof StaffIndexRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/staff/add/confirm': typeof StaffAddConfirmRoute
   '/staff/add/details': typeof StaffAddDetailsRoute
   '/staff/add/done': typeof StaffAddDoneRoute
   '/staff/add/photos': typeof StaffAddPhotosRoute
   '/staff/add/scan': typeof StaffAddScanRoute
+  '/staff/label/$id': typeof StaffLabelIdRoute
   '/staff/add': typeof StaffAddIndexRoute
 }
 export interface FileRoutesById {
@@ -204,6 +252,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/basket': typeof BasketRoute
+  '/checkout': typeof CheckoutRoute
+  '/order-confirmation': typeof OrderConfirmationRoute
   '/search': typeof SearchRoute
   '/trade': typeof TradeRoute
   '/wishlist': typeof WishlistRoute
@@ -211,6 +261,8 @@ export interface FileRoutesById {
   '/curiosity-cabinet/$slug': typeof CuriosityCabinetSlugRoute
   '/library/$slug': typeof LibrarySlugRoute
   '/sound-vision/$slug': typeof SoundVisionSlugRoute
+  '/staff/orders': typeof StaffOrdersRoute
+  '/staff/settings': typeof StaffSettingsRoute
   '/staff/stock': typeof StaffStockRoute
   '/staff/today': typeof StaffTodayRoute
   '/arcade/': typeof ArcadeIndexRoute
@@ -218,11 +270,13 @@ export interface FileRoutesById {
   '/library/': typeof LibraryIndexRoute
   '/sound-vision/': typeof SoundVisionIndexRoute
   '/staff/': typeof StaffIndexRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/staff/add/confirm': typeof StaffAddConfirmRoute
   '/staff/add/details': typeof StaffAddDetailsRoute
   '/staff/add/done': typeof StaffAddDoneRoute
   '/staff/add/photos': typeof StaffAddPhotosRoute
   '/staff/add/scan': typeof StaffAddScanRoute
+  '/staff/label/$id': typeof StaffLabelIdRoute
   '/staff/add/': typeof StaffAddIndexRoute
 }
 export interface FileRouteTypes {
@@ -231,6 +285,8 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/basket'
+    | '/checkout'
+    | '/order-confirmation'
     | '/search'
     | '/trade'
     | '/wishlist'
@@ -238,6 +294,8 @@ export interface FileRouteTypes {
     | '/curiosity-cabinet/$slug'
     | '/library/$slug'
     | '/sound-vision/$slug'
+    | '/staff/orders'
+    | '/staff/settings'
     | '/staff/stock'
     | '/staff/today'
     | '/arcade/'
@@ -245,17 +303,21 @@ export interface FileRouteTypes {
     | '/library/'
     | '/sound-vision/'
     | '/staff/'
+    | '/api/stripe/webhook'
     | '/staff/add/confirm'
     | '/staff/add/details'
     | '/staff/add/done'
     | '/staff/add/photos'
     | '/staff/add/scan'
+    | '/staff/label/$id'
     | '/staff/add/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/basket'
+    | '/checkout'
+    | '/order-confirmation'
     | '/search'
     | '/trade'
     | '/wishlist'
@@ -263,6 +325,8 @@ export interface FileRouteTypes {
     | '/curiosity-cabinet/$slug'
     | '/library/$slug'
     | '/sound-vision/$slug'
+    | '/staff/orders'
+    | '/staff/settings'
     | '/staff/stock'
     | '/staff/today'
     | '/arcade'
@@ -270,17 +334,21 @@ export interface FileRouteTypes {
     | '/library'
     | '/sound-vision'
     | '/staff'
+    | '/api/stripe/webhook'
     | '/staff/add/confirm'
     | '/staff/add/details'
     | '/staff/add/done'
     | '/staff/add/photos'
     | '/staff/add/scan'
+    | '/staff/label/$id'
     | '/staff/add'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/basket'
+    | '/checkout'
+    | '/order-confirmation'
     | '/search'
     | '/trade'
     | '/wishlist'
@@ -288,6 +356,8 @@ export interface FileRouteTypes {
     | '/curiosity-cabinet/$slug'
     | '/library/$slug'
     | '/sound-vision/$slug'
+    | '/staff/orders'
+    | '/staff/settings'
     | '/staff/stock'
     | '/staff/today'
     | '/arcade/'
@@ -295,11 +365,13 @@ export interface FileRouteTypes {
     | '/library/'
     | '/sound-vision/'
     | '/staff/'
+    | '/api/stripe/webhook'
     | '/staff/add/confirm'
     | '/staff/add/details'
     | '/staff/add/done'
     | '/staff/add/photos'
     | '/staff/add/scan'
+    | '/staff/label/$id'
     | '/staff/add/'
   fileRoutesById: FileRoutesById
 }
@@ -307,6 +379,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   BasketRoute: typeof BasketRoute
+  CheckoutRoute: typeof CheckoutRoute
+  OrderConfirmationRoute: typeof OrderConfirmationRoute
   SearchRoute: typeof SearchRoute
   TradeRoute: typeof TradeRoute
   WishlistRoute: typeof WishlistRoute
@@ -314,6 +388,8 @@ export interface RootRouteChildren {
   CuriosityCabinetSlugRoute: typeof CuriosityCabinetSlugRoute
   LibrarySlugRoute: typeof LibrarySlugRoute
   SoundVisionSlugRoute: typeof SoundVisionSlugRoute
+  StaffOrdersRoute: typeof StaffOrdersRoute
+  StaffSettingsRoute: typeof StaffSettingsRoute
   StaffStockRoute: typeof StaffStockRoute
   StaffTodayRoute: typeof StaffTodayRoute
   ArcadeIndexRoute: typeof ArcadeIndexRoute
@@ -321,11 +397,13 @@ export interface RootRouteChildren {
   LibraryIndexRoute: typeof LibraryIndexRoute
   SoundVisionIndexRoute: typeof SoundVisionIndexRoute
   StaffIndexRoute: typeof StaffIndexRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   StaffAddConfirmRoute: typeof StaffAddConfirmRoute
   StaffAddDetailsRoute: typeof StaffAddDetailsRoute
   StaffAddDoneRoute: typeof StaffAddDoneRoute
   StaffAddPhotosRoute: typeof StaffAddPhotosRoute
   StaffAddScanRoute: typeof StaffAddScanRoute
+  StaffLabelIdRoute: typeof StaffLabelIdRoute
   StaffAddIndexRoute: typeof StaffAddIndexRoute
 }
 
@@ -350,6 +428,20 @@ declare module '@tanstack/react-router' {
       path: '/basket'
       fullPath: '/basket'
       preLoaderRoute: typeof BasketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-confirmation': {
+      id: '/order-confirmation'
+      path: '/order-confirmation'
+      fullPath: '/order-confirmation'
+      preLoaderRoute: typeof OrderConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -436,6 +528,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/staff/orders': {
+      id: '/staff/orders'
+      path: '/staff/orders'
+      fullPath: '/staff/orders'
+      preLoaderRoute: typeof StaffOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staff/settings': {
+      id: '/staff/settings'
+      path: '/staff/settings'
+      fullPath: '/staff/settings'
+      preLoaderRoute: typeof StaffSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/staff/stock': {
       id: '/staff/stock'
       path: '/staff/stock'
@@ -448,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/staff/today'
       fullPath: '/staff/today'
       preLoaderRoute: typeof StaffTodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/staff/add/': {
@@ -492,6 +605,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffAddScanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/staff/label/$id': {
+      id: '/staff/label/$id'
+      path: '/staff/label/$id'
+      fullPath: '/staff/label/$id'
+      preLoaderRoute: typeof StaffLabelIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -499,6 +619,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   BasketRoute: BasketRoute,
+  CheckoutRoute: CheckoutRoute,
+  OrderConfirmationRoute: OrderConfirmationRoute,
   SearchRoute: SearchRoute,
   TradeRoute: TradeRoute,
   WishlistRoute: WishlistRoute,
@@ -506,6 +628,8 @@ const rootRouteChildren: RootRouteChildren = {
   CuriosityCabinetSlugRoute: CuriosityCabinetSlugRoute,
   LibrarySlugRoute: LibrarySlugRoute,
   SoundVisionSlugRoute: SoundVisionSlugRoute,
+  StaffOrdersRoute: StaffOrdersRoute,
+  StaffSettingsRoute: StaffSettingsRoute,
   StaffStockRoute: StaffStockRoute,
   StaffTodayRoute: StaffTodayRoute,
   ArcadeIndexRoute: ArcadeIndexRoute,
@@ -513,13 +637,25 @@ const rootRouteChildren: RootRouteChildren = {
   LibraryIndexRoute: LibraryIndexRoute,
   SoundVisionIndexRoute: SoundVisionIndexRoute,
   StaffIndexRoute: StaffIndexRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   StaffAddConfirmRoute: StaffAddConfirmRoute,
   StaffAddDetailsRoute: StaffAddDetailsRoute,
   StaffAddDoneRoute: StaffAddDoneRoute,
   StaffAddPhotosRoute: StaffAddPhotosRoute,
   StaffAddScanRoute: StaffAddScanRoute,
+  StaffLabelIdRoute: StaffLabelIdRoute,
   StaffAddIndexRoute: StaffAddIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

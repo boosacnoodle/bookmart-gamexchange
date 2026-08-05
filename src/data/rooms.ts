@@ -1,7 +1,7 @@
-import roomLibrary from "@/assets/room-library.jpg";
-import roomArcade from "@/assets/room-arcade.jpg";
-import roomSoundVision from "@/assets/room-sound-vision.jpg";
-import roomCuriosity from "@/assets/room-curiosity.jpg";
+import roomLibrary from "@/assets/room-library.webp";
+import roomArcade from "@/assets/room-arcade.webp";
+import roomSoundVision from "@/assets/room-sound-vision.webp";
+import roomCuriosity from "@/assets/room-curiosity.webp";
 
 export type RoomId = "library" | "arcade" | "sound-vision" | "curiosity";
 

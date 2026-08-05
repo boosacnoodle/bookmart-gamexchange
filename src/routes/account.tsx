@@ -72,10 +72,7 @@ function Account() {
               </a>
             </li>
             <li>
-              <Link
-                to="/trade"
-                className="text-brass/80 transition-colors hover:text-lamplight"
-              >
+              <Link to="/trade" className="text-brass/80 transition-colors hover:text-lamplight">
                 Selling something? Ring the bell &rarr;
               </Link>
             </li>
@@ -84,8 +81,8 @@ function Account() {
         <div className="min-w-0">
           <p className="pixel-label text-brass/65">Staff door</p>
           <p className="measure mt-4 text-[0.86rem] leading-[1.7] text-foreground/55">
-            Staff and admin sign-in runs on the shop&rsquo;s own till system, through the door
-            at the back. It is not open to the street.
+            Staff and admin sign-in runs on the shop&rsquo;s own till system, through the door at
+            the back. It is not open to the street.
           </p>
         </div>
       </div>

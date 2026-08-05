@@ -4,10 +4,11 @@ import { useEffect } from "react";
 
 import { BigLink, Empty, Panel, Row } from "@/components/staff/StaffKit";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { NEEDS_REVIEW, ORDERS_NEEDING_ATTENTION } from "@/data/staff-demo";
-import { itemName, useDrafts, usePublished, useStaff, whenTouched } from "@/lib/staff";
+import { getStaffDashboard } from "@/lib/intake.server";
+import { itemName, useDrafts, useStaff, whenTouched } from "@/lib/staff";
 
 export const Route = createFileRoute("/staff/today")({
+  loader: () => getStaffDashboard(),
   head: () => ({
     meta: [
       { title: "Today — Bookmart & GameXchange back office" },
@@ -26,7 +27,7 @@ function Today() {
   const staff = useStaff();
   const navigate = useNavigate();
   const drafts = useDrafts();
-  const published = usePublished();
+  const dashboard = Route.useLoaderData();
 
   useEffect(() => {
     if (staff === null) navigate({ to: "/staff", replace: true });
@@ -42,26 +43,41 @@ function Today() {
       footer={
         <BigLink to="/staff/add">
           <Camera aria-hidden="true" className="mr-3 h-5 w-5" />
-          Scan / Photograph Item
+          Scan and list item
         </BigLink>
       }
     >
       <div className="grid grid-cols-2 gap-2">
         <Count label="Not finished" value={drafts.length} />
-        <Count label="Put up today" value={published.length} />
+        <Count label="Put up today" value={dashboard.publishedToday} />
       </div>
 
       <Panel title="Orders needing attention">
-        {ORDERS_NEEDING_ATTENTION.map((job) => (
+        {dashboard.orders === 0 ? (
+          <Empty>No paid orders are waiting for attention.</Empty>
+        ) : (
           <Row
-            key={job.id}
-            to="/staff/today"
-            title={job.title}
-            detail={job.detail}
-            meta={job.when}
-            flag={job.urgent}
+            to="/staff/orders"
+            title={`${dashboard.orders} order${dashboard.orders === 1 ? "" : "s"} waiting`}
+            detail="Open orders and prepare collection or dispatch."
+            flag
           />
-        ))}
+        )}
+      </Panel>
+
+      <Panel title="Back office">
+        <Row
+          to="/staff/add"
+          title="Add item manually"
+          detail="For stock without a usable barcode"
+        />
+        <Row to="/staff/orders" title="Orders" detail="Prepare collection and dispatch orders" />
+        <Row to="/staff/stock" title="Stock" detail="Everything currently on the shelves" />
+        <Row
+          to="/staff/settings"
+          title="Setup status"
+          detail="Scanner, lookup, payments and email"
+        />
       </Panel>
 
       <Panel title="Not finished yet">
@@ -81,26 +97,30 @@ function Today() {
       </Panel>
 
       <Panel title="Items needing another look">
-        {NEEDS_REVIEW.map((job) => (
-          <Row key={job.id} to="/staff/today" title={job.title} detail={job.detail} meta={job.when} />
-        ))}
+        {dashboard.review === 0 ? (
+          <Empty>No listings need review.</Empty>
+        ) : (
+          <Row
+            to="/staff/stock"
+            title={`${dashboard.review} item${dashboard.review === 1 ? "" : "s"} need another look`}
+            detail="Check the listing before it goes live."
+          />
+        )}
       </Panel>
 
       <Panel title="Just put up" action={{ to: "/staff/stock", label: "View stock" }}>
-        {published.length === 0 ? (
+        {dashboard.recent.length === 0 ? (
           <Empty>Nothing yet today. Items you publish appear here.</Empty>
         ) : (
-          published
-            .slice(0, 5)
-            .map((item) => (
-              <Row
-                key={item.id}
-                to="/staff/stock"
-                title={itemName(item)}
-                detail={`${item.shelf} · €${item.price || "0"}`}
-                meta={whenTouched(item.updated)}
-              />
-            ))
+          dashboard.recent.map((item) => (
+            <Row
+              key={item.id}
+              to="/staff/stock"
+              title={item.title}
+              detail={`${item.shelf} · €${(item.priceMinor / 100).toFixed(2)}`}
+              meta={whenTouched(item.updated)}
+            />
+          ))
         )}
       </Panel>
     </StaffShell>

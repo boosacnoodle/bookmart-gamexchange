@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Camera, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { BigButton } from "@/components/staff/StaffKit";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { addPhotos, itemPhotos, removePhoto, useCurrentItem } from "@/lib/staff";
+import { addPhotos, itemPhotos, removePhoto, setPhotoOrder, useCurrentItem } from "@/lib/staff";
 
 export const Route = createFileRoute("/staff/add/photos")({
   head: () => ({
@@ -28,6 +28,17 @@ function PhotoStep() {
   const navigate = useNavigate();
   const input = useRef<HTMLInputElement>(null);
   const [shots, setShots] = useState<string[]>(item ? itemPhotos(item.id) : []);
+  const [problem, setProblem] = useState("");
+
+  const move = (index: number, direction: -1 | 1) => {
+    if (!item) return;
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= shots.length) return;
+    const next = [...shots];
+    [next[index], next[nextIndex]] = [next[nextIndex]!, next[index]!];
+    setPhotoOrder(item.id, next);
+    setShots(next);
+  };
 
   return (
     <StaffShell
@@ -53,9 +64,17 @@ function PhotoStep() {
         onChange={(event) => {
           const files = Array.from(event.target.files ?? []);
           if (!item || files.length === 0) return;
-          const urls = files.map((file) => URL.createObjectURL(file));
-          addPhotos(item.id, urls);
-          setShots(itemPhotos(item.id));
+          setProblem("");
+          void Promise.all(files.slice(0, 6).map(compressPhoto))
+            .then((urls) => {
+              addPhotos(item.id, urls);
+              setShots(itemPhotos(item.id));
+            })
+            .catch(() =>
+              setProblem(
+                "One of those photos could not be read. Use a JPG, PNG or WebP under 15 MB.",
+              ),
+            );
           event.target.value = "";
         }}
       />
@@ -86,9 +105,34 @@ function PhotoStep() {
 
       {shots.length > 0 ? (
         <div className="mt-7 grid grid-cols-3 gap-2">
-          {shots.map((url) => (
+          {shots.map((url, index) => (
             <div key={url} className="relative overflow-hidden rounded-sm bg-timber-deep/60">
               <img src={url} alt="" className="aspect-square w-full object-cover" />
+              {index === 0 ? (
+                <span className="shop-meta absolute top-1 left-1 bg-ink/80 px-2 py-1 text-lamplight">
+                  Primary
+                </span>
+              ) : null}
+              <div className="absolute bottom-1 left-1 flex gap-1">
+                <button
+                  type="button"
+                  disabled={index === 0}
+                  aria-label="Move photo earlier"
+                  onClick={() => move(index, -1)}
+                  className="grid h-10 w-10 place-items-center rounded-sm bg-ink/75 text-brass/80 disabled:opacity-30"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  disabled={index === shots.length - 1}
+                  aria-label="Move photo later"
+                  onClick={() => move(index, 1)}
+                  className="grid h-10 w-10 place-items-center rounded-sm bg-ink/75 text-brass/80 disabled:opacity-30"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
               <button
                 type="button"
                 aria-label="Remove this photo"
@@ -105,6 +149,22 @@ function PhotoStep() {
           ))}
         </div>
       ) : null}
+      <p aria-live="polite" className="mt-4 text-sm leading-6 text-lamplight/75">
+        {problem}
+      </p>
     </StaffShell>
   );
+}
+
+async function compressPhoto(file: File) {
+  if (!file.type.startsWith("image/")) throw new Error("Not an image");
+  if (file.size > 15_000_000) throw new Error("Image too large");
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return canvas.toDataURL("image/jpeg", 0.76);
 }

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, KeyRound, User, ShoppingBag } from "lucide-react";
+import { Heart, KeyRound, ShoppingBag } from "lucide-react";
 
 import { useList } from "@/lib/shop-lists";
 
@@ -20,7 +20,11 @@ export function ShopBar() {
       }}
     >
       <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-3 px-4 py-2 sm:gap-4 sm:px-8 sm:py-3">
-        <Link to="/" aria-label="Bookmart & GameXchange, home" className="flex min-h-11 min-w-0 items-center gap-2">
+        <Link
+          to="/"
+          aria-label="Bookmart & GameXchange, home"
+          className="flex min-h-11 min-w-0 items-center gap-2"
+        >
           <span className="sign-plate truncate text-[0.95rem] leading-none text-lamplight transition-colors duration-200 ease-[var(--ease-brass)] sm:text-base">
             Bookmart
           </span>
@@ -36,9 +40,6 @@ export function ShopBar() {
             <KeyRound className="h-3.5 w-3.5 text-brass" aria-hidden="true" />
             Admin
           </Link>
-          <IconLink to="/account" label="Account">
-            <User className="h-[1.1rem] w-[1.1rem]" />
-          </IconLink>
           <IconLink to="/wishlist" label="Keeping an eye out" count={wishlist.length}>
             <Heart className="h-[1.1rem] w-[1.1rem]" />
           </IconLink>
