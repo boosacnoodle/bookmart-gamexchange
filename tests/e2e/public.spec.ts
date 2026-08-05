@@ -3,36 +3,32 @@ import { expect, test } from "@playwright/test";
 test("homepage navigation reaches core public pages", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("h1#home-title")).toContainText("Bookmart & Game Exchange");
-  await page.getByRole("link", { name: "Books", exact: true }).click();
+  await page.getByRole("link", { name: "Browse books" }).click();
   await expect(page.getByRole("heading", { name: "Books" })).toBeVisible();
   await page.goto("/");
-  await page.getByLabel("Search products").fill("rare books");
-  await page.getByRole("button", { name: "Search" }).click();
+  await page.getByLabel("Search the shop").fill("rare books");
+  await page.getByLabel("Search the shop").press("Enter");
   await expect(page.getByRole("heading", { name: /Search the shop/i })).toBeVisible();
 });
 
 test("immersive storefront controls are real links and form controls", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Menu" }).click();
-  await expect(page.getByRole("dialog", { name: "Shop menu" })).toBeVisible();
-  await page.getByRole("button", { name: "Close menu" }).click();
-  await expect(page.getByRole("dialog", { name: "Shop menu" })).toBeHidden();
+  await expect(page.getByRole("link", { name: "Bookmart and Game Exchange home" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Admin login" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Wishlist" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Basket" })).toBeVisible();
 
-  await page.getByLabel("Search products").fill("dublin");
-  await page.getByLabel("Search products").press("Enter");
+  await page.getByLabel("Search the shop").fill("dublin");
+  await page.getByLabel("Search the shop").press("Enter");
   await expect(page).toHaveURL(/\/search\?q=dublin/);
   await expect(page.getByRole("heading", { name: /Search the shop/i })).toBeVisible();
 
   await page.goto("/");
   const departmentChecks: Array<[RegExp, RegExp]> = [
-    [/^Books$/i, /\/books$/],
-    [/^Rare Books$/i, /\/rare-(and-)?collectible$/],
-    [/^Retro Games$/i, /\/video-games$/],
-    [/^Nintendo$/i, /\/search\?platform=nintendo/],
-    [/^PlayStation$/i, /\/search\?platform=playstation/],
-    [/^Xbox$/i, /\/search\?platform=xbox/],
-    [/^Films & Music$/i, /\/music(-and)?-film$/],
-    [/^More$/i, /\/collections$/]
+    [/Books.*Browse/i, /\/books$/],
+    [/Games.*Browse/i, /\/games$/],
+    [/Music & Film.*Browse/i, /\/music-film$/],
+    [/Rare & Collectible.*Browse/i, /\/rare-collectible$/]
   ];
 
   for (const [name, url] of departmentChecks) {
@@ -42,18 +38,20 @@ test("immersive storefront controls are real links and form controls", async ({ 
   }
 
   await page.goto("/");
-  await page.getByRole("link", { name: "Account" }).click();
+  await page.getByRole("link", { name: "Admin login" }).click();
   await expect(page).toHaveURL(/\/account\/login/);
   await page.goto("/");
   await page.getByRole("link", { name: "Basket" }).click();
   await expect(page).toHaveURL(/\/basket/);
   await page.goto("/");
-  await page.getByRole("button", { name: "Menu" }).click();
-  await page.getByRole("link", { name: "Sell / Trade" }).click();
+  await page.getByRole("link", { name: /Bring your old ones in/i }).click();
   await expect(page).toHaveURL(/\/sell-or-trade/);
   await page.goto("/");
-  await page.getByRole("link", { name: /Visit Our Shop/i }).last().click();
-  await expect(page).toHaveURL(/\/visit-us/);
+  await page.getByRole("button", { name: /Open until 7pm/i }).click();
+  await expect(page.locator("#trade-counter")).toBeInViewport();
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: /01 855 1300/ })).toHaveAttribute("href", "tel:+35318551300");
+  await expect(page.getByRole("link", { name: /73 Talbot Street/ }).first()).toHaveAttribute("href", /google\.com\/maps/);
 });
 
 test("storefront reduced motion and mobile layout remain accessible", async ({ browser }) => {
@@ -63,7 +61,7 @@ test("storefront reduced motion and mobile layout remain accessible", async ({ b
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBe(0);
   await expect(page.locator("h1#home-title")).toContainText("Bookmart & Game Exchange");
-  await expect(page.getByRole("link", { name: "Books", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse books" })).toBeVisible();
   await context.close();
 });
 
@@ -78,8 +76,8 @@ test("storefront remains responsive in mobile landscape and desktop", async ({ b
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     await expect(page.locator("h1#home-title")).toContainText("Bookmart & Game Exchange");
-    await expect(page.getByRole("search")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Xbox", exact: true })).toBeVisible();
+  await expect(page.getByRole("search")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Games.*Browse/i })).toBeVisible();
     await context.close();
   }
 });

@@ -17,9 +17,9 @@ export default async function StaffDashboard() {
         <h1>Staff dashboard</h1>
         <Link className="button button-primary" href="/staff/intake">Scan and list item</Link>
       </div>
-      <div className="management-card">
-        <h2>Daily intake</h2>
-        <p>Start here to scan a barcode, confirm condition and publish one physical shop copy.</p>
+      <div className="staff-primary-action">
+        <h2>Scan and list item</h2>
+        <p>Use the phone camera or manual barcode entry, confirm the condition and shelf, then publish one real shop copy with its own SKU label.</p>
         <div className="button-row">
           <Link className="button button-primary" href="/staff/intake">Scan and list item</Link>
           <Link className="button button-secondary" href="/staff/inventory/new">Add item manually</Link>

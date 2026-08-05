@@ -8,7 +8,6 @@ const initial: AuthActionState = { ok: false, message: "" };
 
 export function LoginForm({ next }: { next?: string }) {
   const [state, action] = useActionState(loginAction, initial);
-  const showDemoAccounts = process.env.NODE_ENV !== "production";
   return (
     <form action={action} className="form-panel">
       <input type="hidden" name="next" value={next ?? ""} />
@@ -16,7 +15,6 @@ export function LoginForm({ next }: { next?: string }) {
       <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
       <SubmitButton>Login</SubmitButton>
       <StatusMessage state={state} />
-      {showDemoAccounts ? <p className="product-meta">Local demo accounts: staff@bookmart.demo / Staff123!, admin@bookmart.demo / Admin123!</p> : null}
     </form>
   );
 }

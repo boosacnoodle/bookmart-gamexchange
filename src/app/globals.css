@@ -1263,6 +1263,289 @@ select {
   }
 }
 
+/* Lovable handoff completion: keep public catalogue warm, premium and fully usable. */
+.category-world,
+.product-detail.premium-product-detail,
+.section.compact {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(224,178,92,0.12), transparent 32%),
+    linear-gradient(180deg, #09090d, #121017 44%, #08080b);
+}
+
+.category-world .breadcrumbs,
+.product-detail.premium-product-detail + .section,
+.category-world .section.compact {
+  color: #f5dfbd;
+}
+
+.category-world .page-hero {
+  min-height: clamp(260px, 36vw, 430px);
+  margin: 0;
+  padding-block: clamp(42px, 7vw, 92px);
+  color: #fff2d6;
+  border-bottom: 1px solid rgba(224,178,92,0.18);
+  box-shadow: inset 0 -80px 110px rgba(0,0,0,0.36);
+}
+
+.category-world .page-hero h1 {
+  text-transform: none;
+  text-shadow: 0 0 22px rgba(224,178,92,0.22);
+}
+
+.category-world .page-hero p {
+  max-width: 560px;
+  color: #d7c29f;
+  font-size: clamp(16px, 1.8vw, 19px);
+}
+
+.category-world .product-grid,
+.product-detail.premium-product-detail + .section .product-grid {
+  margin-inline: auto;
+}
+
+.product-card {
+  overflow: hidden;
+  color: #f6e5c9;
+  border: 1px solid rgba(224,178,92,0.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), transparent),
+    rgba(17,15,18,0.92);
+  box-shadow: 0 18px 52px rgba(0,0,0,0.28);
+}
+
+.product-card-body {
+  background: linear-gradient(180deg, rgba(13,12,14,0.84), rgba(7,7,9,0.96));
+}
+
+.product-card h3 {
+  min-height: auto;
+}
+
+.product-card h3 a,
+.product-card-foot strong {
+  color: #fff1d4;
+}
+
+.product-card .condition-badge {
+  color: #1b1510;
+  background: #e7d0a5;
+  border-color: #ad7b32;
+}
+
+.product-detail.premium-product-detail {
+  max-width: none;
+  padding-inline: clamp(18px, 5vw, 78px);
+  color: #f7e6c7;
+}
+
+.product-detail.premium-product-detail .product-gallery {
+  align-self: start;
+  padding: clamp(12px, 2vw, 18px);
+  border: 1px solid rgba(224,178,92,0.20);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(224,178,92,0.14), transparent 32%),
+    rgba(8,8,10,0.82);
+}
+
+.product-detail.premium-product-detail .gallery-main {
+  border: 1px solid rgba(245,234,216,0.14);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.46);
+}
+
+.product-detail.premium-product-detail .gallery-thumbs img {
+  border-color: rgba(224,178,92,0.22);
+}
+
+.product-detail.premium-product-detail .product-info {
+  color: #f7e6c7;
+  border: 1px solid rgba(224,178,92,0.20);
+  background:
+    linear-gradient(180deg, rgba(97,45,25,0.16), transparent 36%),
+    rgba(12,11,13,0.92);
+}
+
+.product-detail.premium-product-detail .product-info h1 {
+  color: #fff1d4;
+  font-family: ui-serif, Georgia, serif;
+  text-shadow: 0 0 28px rgba(224,178,92,0.16);
+}
+
+.purchase-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  margin: 20px 0 12px;
+  border: 1px solid rgba(224,178,92,0.22);
+  background: rgba(0,0,0,0.24);
+}
+
+.purchase-panel .price {
+  margin: 0;
+  color: #ffd992;
+  font-size: clamp(30px, 4vw, 46px);
+}
+
+.counter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.fulfilment-panel {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0;
+  padding: 16px;
+  border: 1px solid rgba(224,178,92,0.22);
+  background: rgba(0,0,0,0.22);
+}
+
+.fulfilment-panel h2 {
+  margin: 0 0 4px;
+  color: #fff1d4;
+  font-family: ui-serif, Georgia, serif;
+  font-size: 22px;
+}
+
+.fulfilment-panel div {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+}
+
+.fulfilment-panel strong,
+.product-detail.premium-product-detail .detail-list dd,
+.product-detail.premium-product-detail .copy-block h2 {
+  color: #fff1d4;
+}
+
+.fulfilment-panel span,
+.product-detail.premium-product-detail .detail-list dt,
+.product-detail.premium-product-detail .copy-block p,
+.product-detail.premium-product-detail .product-info > p {
+  color: #d7c29f;
+}
+
+.product-detail.premium-product-detail .detail-list {
+  padding-top: 20px;
+  border-top: 1px solid rgba(224,178,92,0.18);
+}
+
+.product-detail.premium-product-detail .copy-block {
+  border-top-color: rgba(224,178,92,0.18);
+}
+
+.management-shell {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(224,178,92,0.09), transparent 40%),
+    #0c0b0f;
+}
+
+.management-nav {
+  background:
+    linear-gradient(180deg, rgba(107,47,27,0.28), transparent 34%),
+    #111014;
+  border-right: 1px solid rgba(224,178,92,0.18);
+}
+
+.management-nav a,
+.management-nav button {
+  color: #f7e6c7;
+  border-color: rgba(224,178,92,0.20);
+  background: rgba(255,255,255,0.02);
+}
+
+.management-main {
+  color: #f7e6c7;
+}
+
+.management-card,
+.metric,
+.intake-panel,
+.success-panel {
+  color: #f7e6c7;
+  border-color: rgba(224,178,92,0.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), transparent),
+    rgba(18,16,20,0.92);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+}
+
+.management-card p,
+.intake-panel p,
+.metric strong,
+.detail-list dt {
+  color: #d7c29f;
+}
+
+.metric span {
+  color: #ffd992;
+}
+
+.staff-primary-action {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 4vw, 36px);
+  margin-bottom: 18px;
+  border: 1px solid rgba(224,178,92,0.28);
+  background:
+    linear-gradient(135deg, rgba(44,98,52,0.22), rgba(120,47,28,0.18)),
+    rgba(18,16,20,0.94);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.28);
+}
+
+.staff-primary-action h2 {
+  margin: 0;
+  color: #fff1d4;
+  font-family: ui-serif, Georgia, serif;
+  font-size: clamp(30px, 5vw, 58px);
+  line-height: 1;
+}
+
+.staff-primary-action p {
+  max-width: 620px;
+  margin: 0;
+  color: #d7c29f;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.staff-primary-action .button {
+  width: fit-content;
+  min-height: 58px;
+  padding-inline: 24px;
+  font-size: 17px;
+}
+
+.scanner-frame {
+  border-color: rgba(224,178,92,0.26);
+  background: #050507;
+}
+
+.scan-target {
+  border-color: #ffd992;
+  color: #ffd992;
+  box-shadow: 0 0 26px rgba(224,178,92,0.26);
+}
+
+@media (max-width: 760px) {
+  .purchase-panel,
+  .fulfilment-panel div {
+    grid-template-columns: 1fr;
+  }
+
+  .purchase-panel .button {
+    width: 100%;
+  }
+
+  .counter-actions .button {
+    width: 100%;
+  }
+}
+
 /* Hybrid artwork storefront: supplied reference as primary visual layer */
 body:has(.art-storefront) {
   background: #030807;
