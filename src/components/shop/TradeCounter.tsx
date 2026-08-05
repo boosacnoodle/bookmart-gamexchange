@@ -57,6 +57,8 @@ export function TradeCounter() {
                   {SHOP.street}
                   <br />
                   {SHOP.city}
+                  <br />
+                  {SHOP.postcode}
                 </a>
                 <br />
                 <a

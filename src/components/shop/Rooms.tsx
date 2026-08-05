@@ -29,12 +29,6 @@ export function Rooms() {
       }}
       onPointerLeave={() => setActive(null)}
     >
-      <div className="mx-auto max-w-[1800px] px-6 pt-16 pb-6 sm:px-8 md:pt-20 md:pb-8">
-        <h2 className="sign-plate text-[clamp(1.55rem,3vw,2.15rem)] leading-[1.15] text-lamplight">
-          Four rooms
-        </h2>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-4">
         {ROOMS.map((room) => {
           const isActive = canHover && active === room.id;
@@ -95,9 +89,11 @@ export function Rooms() {
               />
 
               <div className="relative p-7 sm:p-8">
-                <h3 className="sign-plate text-[1.6rem] leading-[1.15] text-lamplight sm:text-[1.8rem]">
-                  {room.name}
-                </h3>
+                {room.id === "library" ? (
+                  <h3 className="sign-plate text-[1.6rem] leading-[1.15] text-lamplight sm:text-[1.8rem]">
+                    {room.name}
+                  </h3>
+                ) : null}
 
                 <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
                   {room.tags.map((tag) => (

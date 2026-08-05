@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 
 import storefrontWide from "@/assets/storefront-pixel.png";
 import storefrontPortrait from "@/assets/storefront-pixel-portrait.png";
+import { SHOP } from "@/data/shop";
 
 /**
  * The shopfront, drawn in pixel art. Everything interactive is a place in the
@@ -50,7 +51,13 @@ const HOTSPOTS: Hotspot[] = [
     id: "board",
     label: "Buy, sell, trade",
     glow: "var(--glass-green)",
-    box: "left-[6%] top-[63%] h-[14%] w-[16%] lg:left-[12.5%] lg:top-[63%] lg:h-[24%] lg:w-[10%] landscape:left-[12.5%] landscape:top-[63%] landscape:h-[24%] landscape:w-[10%]",
+    box: "left-[6%] top-[63%] h-[14%] w-[16%] lg:hidden landscape:hidden",
+  },
+  {
+    id: "map",
+    label: "Find Bookmart at 73 Talbot Street, Dublin 1",
+    glow: "var(--glass-green)",
+    box: "hidden lg:block lg:left-[12.5%] lg:top-[63%] lg:h-[24%] lg:w-[10%] landscape:left-[12.5%] landscape:top-[63%] landscape:block landscape:h-[24%] landscape:w-[10%]",
   },
 ];
 
@@ -60,6 +67,7 @@ const GLOW_CENTRES: Record<string, string> = {
   games: "73% 55%",
   books: "30% 55%",
   board: "17% 74%",
+  map: "17% 74%",
 };
 
 export function Storefront({ onEnter }: { onEnter: () => void }) {
@@ -96,6 +104,10 @@ export function Storefront({ onEnter }: { onEnter: () => void }) {
 
   const act = (id: string) => {
     if (id === "board") return toTrade();
+    if (id === "map") {
+      window.open(SHOP.maps, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (id === "books") return void navigate({ to: "/library" });
     if (id === "games") return void navigate({ to: "/arcade" });
     onEnter();

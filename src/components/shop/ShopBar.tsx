@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, User, ShoppingBag } from "lucide-react";
+import { Heart, KeyRound, User, ShoppingBag } from "lucide-react";
 
 import { useList } from "@/lib/shop-lists";
 
@@ -28,6 +28,14 @@ export function ShopBar() {
         </Link>
 
         <nav aria-label="The counter" className="flex shrink-0 items-center gap-0.5 text-brass/75">
+          <Link
+            to="/staff"
+            aria-label="Admin login"
+            className="mr-1 inline-flex min-h-11 items-center gap-2 rounded-sm border border-brass/25 bg-timber-deep/70 px-3 text-[0.68rem] font-semibold tracking-[0.12em] text-lamplight uppercase transition-[border-color,background-color,color] duration-200 ease-[var(--ease-brass)] hover:border-brass/50 hover:bg-timber-deep focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass/60 sm:px-4 sm:text-xs"
+          >
+            <KeyRound className="h-3.5 w-3.5 text-brass" aria-hidden="true" />
+            Admin
+          </Link>
           <IconLink to="/account" label="Account">
             <User className="h-[1.1rem] w-[1.1rem]" />
           </IconLink>
