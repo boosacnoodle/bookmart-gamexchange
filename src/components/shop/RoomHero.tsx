@@ -30,7 +30,7 @@ export function RoomHero({
       />
       <div
         aria-hidden="true"
-        className="scene-grade pointer-events-none absolute inset-0 -z-10 opacity-80"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-80"
         style={{ background: room.grade }}
       />
       <div
@@ -38,7 +38,6 @@ export function RoomHero({
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background: `radial-gradient(24rem 22rem at 50% 42%, color-mix(in oklab, ${room.glow} 30%, transparent), transparent 72%)`,
-          mixBlendMode: "soft-light",
           opacity: 0.4,
         }}
       />

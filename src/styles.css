@@ -252,10 +252,8 @@
   );
 }
 
-/* A room's own colour temperature, painted with light rather than paint. */
-@utility scene-grade {
-  mix-blend-mode: soft-light;
-}
+/* A room's own colour temperature is painted with opacity, not blend modes
+   (blend modes ghost the text on Android). */
 
 /* --- Lighting -------------------------------------------------- */
 
