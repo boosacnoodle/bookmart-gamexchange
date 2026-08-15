@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Bell, MapPin, Clock, Phone } from "lucide-react";
+import { Bell, MapPin, Clock, Mail } from "lucide-react";
 
 import { SHOP } from "@/data/shop";
 
@@ -86,17 +86,10 @@ export function TradeCounter() {
             </div>
           </div>
           <div className="flex min-w-0 items-start gap-3">
-            <Phone className="mt-1 h-4 w-4 shrink-0 text-brass/70" aria-hidden="true" />
+            <Mail className="mt-1 h-4 w-4 shrink-0 text-brass/70" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="pixel-label text-brass/65">Ring us</dt>
+              <dt className="pixel-label text-brass/65">Email us</dt>
               <dd className="mt-2 leading-[1.7]">
-                <a
-                  href={SHOP.phoneHref}
-                  className="inline-flex min-h-11 items-center break-words py-1 text-lamplight/85 transition-colors duration-200 ease-[var(--ease-brass)] hover:text-lamplight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass/60"
-                >
-                  {SHOP.phone}
-                </a>
-                <br />
                 <a
                   href={SHOP.emailHref}
                   className="shop-meta mt-1 inline-flex min-h-11 items-center break-all py-1 text-brass/70 transition-colors duration-200 ease-[var(--ease-brass)] hover:text-lamplight"

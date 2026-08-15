@@ -8,8 +8,6 @@ export const SHOP = {
   city: "Dublin 1",
   postcode: "D01 TW28",
   country: "Ireland",
-  phone: "+353 1 836 3103",
-  phoneHref: "tel:+35318363103",
   email: "hello@gamexchange.ie",
   emailHref: "mailto:hello@gamexchange.ie",
   maps: "https://www.google.com/maps/search/?api=1&query=73+Talbot+Street%2C+Dublin+1%2C+D01+TW28",

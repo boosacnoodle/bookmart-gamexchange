@@ -115,14 +115,7 @@ function Basket() {
               </p>
               <p className="sign-plate mt-2 text-[1.4rem] text-lamplight">{formatPrice(total)}</p>
               <p className="measure mt-3 text-[0.85rem] leading-[1.7] text-foreground/55">
-                Pay in the shop, or call us on{" "}
-                <a
-                  href={SHOP.phoneHref}
-                  className="text-brass/85 underline decoration-brass/40 underline-offset-4 transition-colors hover:text-lamplight"
-                >
-                  {SHOP.phone}
-                </a>{" "}
-                and we will put it aside.
+                Pay in the shop and we will put it aside.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -138,16 +131,6 @@ function Basket() {
                   Secure checkout
                 </Link>
               ) : null}
-              <a
-                href={SHOP.phoneHref}
-                className="shop-meta rounded-sm bg-timber/85 px-6 py-3.5 text-lamplight transition-colors duration-200 ease-[var(--ease-brass)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass"
-                style={{
-                  boxShadow:
-                    "var(--shadow-plate), inset 0 0 0 1px color-mix(in oklab, var(--brass) 34%, transparent)",
-                }}
-              >
-                Ring the shop
-              </a>
               <button
                 type="button"
                 onClick={() => clearList("basket")}
@@ -159,7 +142,7 @@ function Basket() {
           </div>
           {!allLive ? (
             <p className="mt-4 text-sm leading-6 text-foreground/55">
-              Example items are display-only. Ring the shop for current availability.
+              Example items are display-only. Ask in the shop for current availability.
             </p>
           ) : null}
         </>

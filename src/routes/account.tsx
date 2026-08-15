@@ -57,14 +57,6 @@ function Account() {
           <ul className="mt-4 grid gap-3 text-[0.9rem] leading-[1.6] text-foreground/75">
             <li>
               <a
-                href={SHOP.phoneHref}
-                className="text-lamplight/90 transition-colors hover:text-lamplight"
-              >
-                {SHOP.phone}
-              </a>
-            </li>
-            <li>
-              <a
                 href={SHOP.emailHref}
                 className="text-lamplight/90 transition-colors hover:text-lamplight"
               >

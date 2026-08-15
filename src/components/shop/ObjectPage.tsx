@@ -342,15 +342,9 @@ function Enquiry({ item, room }: { item: StockItem; room: Room }) {
         >
           Ask about this item
         </a>
-        <a
-          href={SHOP.phoneHref}
-          className="shop-meta py-3 text-foreground/50 transition-colors duration-200 ease-[var(--ease-brass)] hover:text-lamplight"
-        >
-          Or ring the shop — {SHOP.phone}
-        </a>
       </div>
       <p className="measure mt-3 text-[0.86rem] leading-[1.6] text-foreground/50">
-        Somebody who has actually held this copy will answer, usually the same day.
+        Somebody who has actually held this copy will write back, usually the same day.
       </p>
     </section>
   );
