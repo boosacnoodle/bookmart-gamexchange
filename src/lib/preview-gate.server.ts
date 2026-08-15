@@ -1,6 +1,7 @@
 export type PreviewGateConfig = {
   mode?: string;
   password?: string;
+  username?: string;
 };
 
 function isPreviewMode(mode: string | undefined): boolean {
@@ -28,13 +29,17 @@ function unavailableResponse(): Response {
   });
 }
 
-function hasValidPreviewAuthorization(request: Request, password: string): boolean {
+function hasValidPreviewAuthorization(
+  request: Request,
+  username: string,
+  password: string,
+): boolean {
   const authorization = request.headers.get("authorization");
   if (!authorization?.startsWith("Basic ")) return false;
 
   try {
     const credentials = atob(authorization.slice("Basic ".length));
-    return credentials === `preview:${password}`;
+    return credentials === `${username}:${password}`;
   } catch {
     return false;
   }
@@ -51,12 +56,16 @@ export async function previewGate(
 ): Promise<Response | null> {
   if (!isPreviewMode(config.mode)) return null;
   if (!config.password) return unavailableResponse();
-  return hasValidPreviewAuthorization(request, config.password) ? null : unauthorizedResponse();
+  const username = config.username?.trim() || "preview";
+  return hasValidPreviewAuthorization(request, username, config.password)
+    ? null
+    : unauthorizedResponse();
 }
 
 export function previewGateFromEnvironment(request: Request): Promise<Response | null> {
   return previewGate(request, {
     mode: process.env.SITE_ACCESS_MODE,
     password: process.env.SITE_PREVIEW_PASSWORD,
+    username: process.env.SITE_PREVIEW_USERNAME,
   });
 }
