@@ -176,9 +176,9 @@ export const LEGAL_DOCS: LegalDoc[] = [
         ],
       },
       {
-        heading: "In person",
+        heading: "Beyond your legal rights",
         paragraphs: [
-          "You are always welcome to bring a return back to the shop at 73 Talbot Street, Dublin 1 during opening hours. Please bring your order number.",
+          "We do not offer returns or exchanges for a change of mind outside the 14-day legal window. Second-hand items are sold as described and are not returnable simply because you changed your mind.",
         ],
       },
     ],
