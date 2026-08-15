@@ -20,11 +20,8 @@ export default defineConfig({
     },
   },
   nitro: {
-    cloudflare: {
-      // nodejs_compat is now provided by the preview runtime by default.
-      // Re-declaring it causes the worker loader to reject the build.
-      nodeCompat: false,
-    },
+    // Railway runs a standard Node server, not Cloudflare Workers.
+    preset: "node-server",
   },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
