@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 
@@ -208,6 +208,25 @@ export function Storefront({ onEnter }: { onEnter: () => void }) {
             />
             Open until 7pm
           </button>
+        </div>
+        <div className="mx-auto max-w-[1800px] px-6 pb-3 sm:px-8">
+          <nav
+            aria-label="Legal"
+            className="flex flex-wrap gap-x-5 gap-y-1 text-[0.66rem] text-muted-foreground/50"
+          >
+            <Link to="/privacy" className="transition-colors duration-200 hover:text-lamplight">
+              Privacy
+            </Link>
+            <Link to="/terms" className="transition-colors duration-200 hover:text-lamplight">
+              Terms
+            </Link>
+            <Link to="/returns" className="transition-colors duration-200 hover:text-lamplight">
+              Returns
+            </Link>
+            <Link to="/cookies" className="transition-colors duration-200 hover:text-lamplight">
+              Cookies
+            </Link>
+          </nav>
         </div>
       </div>
     </section>

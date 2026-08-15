@@ -13,8 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as BasketRouteImport } from './routes/basket'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as OrderConfirmationRouteImport } from './routes/order-confirmation'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TradeRouteImport } from './routes/trade'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as ArcadeIndexRouteImport } from './routes/arcade.index'
@@ -59,14 +63,34 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrderConfirmationRoute = OrderConfirmationRouteImport.update({
   id: '/order-confirmation',
   path: '/order-confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TradeRoute = TradeRouteImport.update({
@@ -190,8 +214,12 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/basket': typeof BasketRoute
   '/checkout': typeof CheckoutRoute
+  '/cookies': typeof CookiesRoute
   '/order-confirmation': typeof OrderConfirmationRoute
+  '/privacy': typeof PrivacyRoute
+  '/returns': typeof ReturnsRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/trade': typeof TradeRoute
   '/wishlist': typeof WishlistRoute
   '/arcade/$slug': typeof ArcadeSlugRoute
@@ -221,8 +249,12 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/basket': typeof BasketRoute
   '/checkout': typeof CheckoutRoute
+  '/cookies': typeof CookiesRoute
   '/order-confirmation': typeof OrderConfirmationRoute
+  '/privacy': typeof PrivacyRoute
+  '/returns': typeof ReturnsRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/trade': typeof TradeRoute
   '/wishlist': typeof WishlistRoute
   '/arcade/$slug': typeof ArcadeSlugRoute
@@ -253,8 +285,12 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/basket': typeof BasketRoute
   '/checkout': typeof CheckoutRoute
+  '/cookies': typeof CookiesRoute
   '/order-confirmation': typeof OrderConfirmationRoute
+  '/privacy': typeof PrivacyRoute
+  '/returns': typeof ReturnsRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/trade': typeof TradeRoute
   '/wishlist': typeof WishlistRoute
   '/arcade/$slug': typeof ArcadeSlugRoute
@@ -286,8 +322,12 @@ export interface FileRouteTypes {
     | '/account'
     | '/basket'
     | '/checkout'
+    | '/cookies'
     | '/order-confirmation'
+    | '/privacy'
+    | '/returns'
     | '/search'
+    | '/terms'
     | '/trade'
     | '/wishlist'
     | '/arcade/$slug'
@@ -317,8 +357,12 @@ export interface FileRouteTypes {
     | '/account'
     | '/basket'
     | '/checkout'
+    | '/cookies'
     | '/order-confirmation'
+    | '/privacy'
+    | '/returns'
     | '/search'
+    | '/terms'
     | '/trade'
     | '/wishlist'
     | '/arcade/$slug'
@@ -348,8 +392,12 @@ export interface FileRouteTypes {
     | '/account'
     | '/basket'
     | '/checkout'
+    | '/cookies'
     | '/order-confirmation'
+    | '/privacy'
+    | '/returns'
     | '/search'
+    | '/terms'
     | '/trade'
     | '/wishlist'
     | '/arcade/$slug'
@@ -380,8 +428,12 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   BasketRoute: typeof BasketRoute
   CheckoutRoute: typeof CheckoutRoute
+  CookiesRoute: typeof CookiesRoute
   OrderConfirmationRoute: typeof OrderConfirmationRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ReturnsRoute: typeof ReturnsRoute
   SearchRoute: typeof SearchRoute
+  TermsRoute: typeof TermsRoute
   TradeRoute: typeof TradeRoute
   WishlistRoute: typeof WishlistRoute
   ArcadeSlugRoute: typeof ArcadeSlugRoute
@@ -437,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/order-confirmation': {
       id: '/order-confirmation'
       path: '/order-confirmation'
@@ -444,11 +503,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trade': {
@@ -620,8 +700,12 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   BasketRoute: BasketRoute,
   CheckoutRoute: CheckoutRoute,
+  CookiesRoute: CookiesRoute,
   OrderConfirmationRoute: OrderConfirmationRoute,
+  PrivacyRoute: PrivacyRoute,
+  ReturnsRoute: ReturnsRoute,
   SearchRoute: SearchRoute,
+  TermsRoute: TermsRoute,
   TradeRoute: TradeRoute,
   WishlistRoute: WishlistRoute,
   ArcadeSlugRoute: ArcadeSlugRoute,
