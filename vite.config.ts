@@ -7,6 +7,18 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Allow access via Tailscale hostname in dev (Vite blocks non-allowlisted hosts).
+  vite: {
+    server: {
+      allowedHosts: [
+        "thomass-mac-mini.tailef4e4a.ts.net",
+        ".ts.net",
+        ".trycloudflare.com",
+        ".pinggy.net",
+        ".pinggy-free.link",
+      ],
+    },
+  },
   nitro: {
     cloudflare: {
       // nodejs_compat is now provided by the preview runtime by default.

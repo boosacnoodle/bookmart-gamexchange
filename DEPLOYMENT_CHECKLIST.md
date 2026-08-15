@@ -16,6 +16,8 @@ accepting real orders.
 - Deploy PostgreSQL and set `DATABASE_URL`.
 - Generate a long random `SESSION_SECRET` (at least 32 bytes).
 - Set the final HTTPS origin in `APP_URL`.
+- For a private domain preview, set `SITE_ACCESS_MODE=preview` and add a long `SITE_PREVIEW_PASSWORD` only in the host secret manager. The entire site will return an HTTP password challenge until launch approval.
+- To launch publicly, change only `SITE_ACCESS_MODE` from `preview` to `live` and redeploy. Keep the preview password stored; it is ignored in live mode.
 - Provision object storage and migrate photo persistence before large-scale intake.
 - Configure backups and database retention.
 

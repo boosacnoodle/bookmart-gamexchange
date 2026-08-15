@@ -1,6 +1,12 @@
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
+import { previewGateFromEnvironment } from "./lib/preview-gate.server";
+
+const previewMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const gateResponse = await previewGateFromEnvironment(request);
+  return gateResponse ?? next();
+});
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -25,5 +31,5 @@ const csrfMiddleware = createCsrfMiddleware({
 });
 
 export const startInstance = createStart(() => ({
-  requestMiddleware: [errorMiddleware, csrfMiddleware],
+  requestMiddleware: [errorMiddleware, previewMiddleware, csrfMiddleware],
 }));

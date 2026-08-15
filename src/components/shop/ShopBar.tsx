@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, KeyRound, ShoppingBag } from "lucide-react";
 
 import { useList } from "@/lib/shop-lists";
+import { DeptMenu } from "@/components/shop/DeptMenu";
 
 /**
  * The shop's brass rail. Always present, never in the way.
@@ -32,6 +33,7 @@ export function ShopBar() {
         </Link>
 
         <nav aria-label="The counter" className="flex shrink-0 items-center gap-0.5 text-brass/75">
+          <DeptMenu />
           <Link
             to="/staff"
             aria-label="Admin login"

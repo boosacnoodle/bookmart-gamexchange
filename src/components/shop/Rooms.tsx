@@ -29,7 +29,7 @@ export function Rooms() {
       }}
       onPointerLeave={() => setActive(null)}
     >
-      <div className="grid grid-cols-1 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-px bg-brass/12 md:grid-cols-4">
         {ROOMS.map((room) => {
           const isActive = canHover && active === room.id;
           const dimmed = canHover && active !== null && active !== room.id;
