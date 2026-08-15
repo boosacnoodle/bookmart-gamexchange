@@ -10,8 +10,8 @@ export const SHOP = {
   country: "Ireland",
   phone: "+353 1 836 3103",
   phoneHref: "tel:+35318363103",
-  email: "hello@bookmart.ie",
-  emailHref: "mailto:hello@bookmart.ie",
+  email: "hello@gamexchange.ie",
+  emailHref: "mailto:hello@gamexchange.ie",
   maps: "https://www.google.com/maps/search/?api=1&query=73+Talbot+Street%2C+Dublin+1%2C+D01+TW28",
   directions:
     "https://www.google.com/maps/dir/?api=1&destination=73+Talbot+Street%2C+Dublin+1%2C+D01+TW28",
