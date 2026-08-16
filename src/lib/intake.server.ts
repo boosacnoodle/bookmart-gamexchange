@@ -6,6 +6,11 @@ const lookupSchema = z.object({
   kind: z.enum(["book", "game", "music-film", "rare"]),
 });
 
+const identifySchema = z.object({
+  kind: z.enum(["book", "game", "music-film", "rare"]),
+  photos: z.array(z.string()).min(1).max(6),
+});
+
 const publishSchema = z
   .object({
     intakeId: z.string().optional(),
@@ -39,6 +44,13 @@ export const lookupBarcode = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { lookupBarcodeOnServer } = await import("./intake-impl.server");
     return lookupBarcodeOnServer(data);
+  });
+
+export const identifyPhotos = createServerFn({ method: "POST" })
+  .validator(identifySchema)
+  .handler(async ({ data }) => {
+    const { identifyPhotosOnServer } = await import("./intake-impl.server");
+    return identifyPhotosOnServer(data);
   });
 
 export const publishListing = createServerFn({ method: "POST" })

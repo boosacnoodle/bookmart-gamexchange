@@ -40,8 +40,8 @@ function StaffSettings() {
           good={status.aiPhotoEnabled}
           detail={
             status.aiPhotoEnabled
-              ? "OpenAI enabled; staff must still confirm every field"
-              : "Disabled until an OpenAI key is configured"
+              ? "Gemini (free) enabled; staff must still confirm every field"
+              : "Disabled until a Google AI Studio key is configured"
           }
         />
         <Status label="OCR" good={status.ocrEnabled} detail="Disabled" />

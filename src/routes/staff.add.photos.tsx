@@ -22,6 +22,7 @@ export const Route = createFileRoute("/staff/add/photos")({
 });
 
 const SHOTS = ["The front", "The back", "Any marks or damage"];
+const CLEAN_BACKGROUND_COLOR = "#f6f1e7";
 
 function PhotoStep() {
   const item = useCurrentItem();
@@ -29,6 +30,8 @@ function PhotoStep() {
   const input = useRef<HTMLInputElement>(null);
   const [shots, setShots] = useState<string[]>(item ? itemPhotos(item.id) : []);
   const [problem, setProblem] = useState("");
+  const [cleanBackground, setCleanBackground] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
   const move = (index: number, direction: -1 | 1) => {
     if (!item) return;
@@ -65,7 +68,8 @@ function PhotoStep() {
           const files = Array.from(event.target.files ?? []);
           if (!item || files.length === 0) return;
           setProblem("");
-          void Promise.all(files.slice(0, 6).map(compressPhoto))
+          setProcessing(true);
+          void Promise.all(files.slice(0, 6).map((file) => processPhoto(file, cleanBackground)))
             .then((urls) => {
               addPhotos(item.id, urls);
               setShots(itemPhotos(item.id));
@@ -74,15 +78,29 @@ function PhotoStep() {
               setProblem(
                 "One of those photos could not be read. Use a JPG, PNG or WebP under 15 MB.",
               ),
-            );
+            )
+            .finally(() => setProcessing(false));
           event.target.value = "";
         }}
       />
 
-      <BigButton onClick={() => input.current?.click()}>
+      <BigButton onClick={() => input.current?.click()} disabled={processing}>
         <Camera aria-hidden="true" className="mr-3 h-5 w-5" />
-        {shots.length > 0 ? "Take another photo" : "Open the camera"}
+        {processing
+          ? "Cleaning photos…"
+          : shots.length > 0
+            ? "Take another photo"
+            : "Open the camera"}
       </BigButton>
+
+      <label className="mt-3 flex items-center gap-2 text-sm text-foreground/70">
+        <input
+          type="checkbox"
+          checked={cleanBackground}
+          onChange={(event) => setCleanBackground(event.target.checked)}
+        />
+        Remove the background for a cleaner listing
+      </label>
 
       <ul className="mt-6 space-y-2">
         {SHOTS.map((shot, i) => (
@@ -167,4 +185,29 @@ async function compressPhoto(file: File) {
   canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
   return canvas.toDataURL("image/jpeg", 0.76);
+}
+
+async function processPhoto(file: File, clean: boolean) {
+  const compressed = await compressPhoto(file);
+  if (!clean) return compressed;
+  try {
+    return await removeBackgroundAndComposite(compressed);
+  } catch {
+    return compressed;
+  }
+}
+
+async function removeBackgroundAndComposite(dataUrl: string): Promise<string> {
+  const { removeBackground } = await import("@imgly/background-removal");
+  const blob = await removeBackground(dataUrl);
+  const bitmap = await createImageBitmap(blob);
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  const context = canvas.getContext("2d")!;
+  context.fillStyle = CLEAN_BACKGROUND_COLOR;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(bitmap, 0, 0);
+  bitmap.close();
+  return canvas.toDataURL("image/jpeg", 0.85);
 }

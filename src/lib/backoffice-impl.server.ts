@@ -17,7 +17,12 @@ export async function backofficeStatusOnServer() {
     barcodeEnabled: process.env.BARCODE_INTAKE_ENABLED !== "false",
     metadata: {
       available: true,
-      priority: ["Open Library for ISBN books", "Staff manual completion"],
+      priority: [
+        "Open Library for ISBN books",
+        aiPhotoConfigured()
+          ? "Gemini photo identification for unbarcoded items"
+          : "Staff manual completion",
+      ],
     },
     ocrEnabled: false,
     aiPhotoEnabled: aiPhotoConfigured(),

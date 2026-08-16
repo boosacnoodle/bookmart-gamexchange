@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 import { BigButton, Field, inputClass, inputShadow } from "@/components/staff/StaffKit";
 import { StaffShell } from "@/components/staff/StaffShell";
-import { saveItem, useCurrentItem } from "@/lib/staff";
+import { identifyPhotos } from "@/lib/intake.server";
+import { itemPhotos, saveItem, useCurrentItem } from "@/lib/staff";
 
 export const Route = createFileRoute("/staff/add/details")({
   head: () => ({
@@ -28,6 +29,8 @@ function DetailsStep() {
   const [maker, setMaker] = useState("");
   const [year, setYear] = useState("");
   const [extra, setExtra] = useState("");
+  const [identifying, setIdentifying] = useState(false);
+  const [identifyNote, setIdentifyNote] = useState("");
 
   useEffect(() => {
     if (!item) return;
@@ -43,6 +46,33 @@ function DetailsStep() {
       : item?.kind === "music-film"
         ? "Who is it by?"
         : "Who made it?";
+
+  async function identify() {
+    if (!item || identifying) return;
+    const photos = itemPhotos(item.id);
+    if (photos.length === 0) return;
+    setIdentifying(true);
+    setIdentifyNote("");
+    try {
+      const result = await identifyPhotos({ data: { kind: item.kind, photos } });
+      if (result.title) setTitle(result.title);
+      if (result.creator) setMaker(result.creator);
+      if (result.year) setYear(result.year);
+      const extraBits = [result.publisher, result.format].filter(Boolean).join(" · ");
+      if (extraBits) setExtra(extraBits);
+      setIdentifyNote(
+        result.title
+          ? "Filled from your photos by Gemini — check it before continuing."
+          : "Gemini could not read a title from those photos.",
+      );
+    } catch (error) {
+      setIdentifyNote(
+        error instanceof Error ? error.message : "Photo identification failed. Fill in by hand.",
+      );
+    } finally {
+      setIdentifying(false);
+    }
+  }
 
   return (
     <StaffShell
@@ -71,6 +101,22 @@ function DetailsStep() {
           : "No reliable catalogue match was found, so fill in what you can."}{" "}
         Nothing goes on the website until you say so.
       </p>
+
+      {(item?.photos ?? 0) > 0 ? (
+        <div className="mt-6">
+          <BigButton tone="quiet" disabled={identifying} onClick={() => void identify()}>
+            {identifying ? "Identifying from photos…" : "Identify from photos"}
+          </BigButton>
+          {identifyNote ? (
+            <p className="mt-3 text-[0.86rem] leading-6 text-lamplight/75">{identifyNote}</p>
+          ) : (
+            <p className="mt-3 text-[0.86rem] leading-6 text-foreground/45">
+              Uses Gemini (free). It can read books, games, CDs and vinyl from a photo — always
+              check the result.
+            </p>
+          )}
+        </div>
+      ) : null}
 
       <div className="mt-6 space-y-6">
         <Field label="What is it called?">

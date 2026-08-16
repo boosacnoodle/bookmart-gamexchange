@@ -186,6 +186,13 @@ function validatePhotos(photos: string[]) {
   }
 }
 
+export async function identifyPhotosOnServer(data: { kind: ItemKind; photos: string[] }) {
+  await requireStaffOnServer();
+  validatePhotos(data.photos);
+  const { photoIdentificationProvider } = await import("./intake/ai-service");
+  return photoIdentificationProvider().identify({ category: data.kind, imageUrls: data.photos });
+}
+
 export async function publishListingOnServer(data: {
   intakeId?: string;
   kind: ItemKind;
