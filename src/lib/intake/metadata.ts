@@ -263,7 +263,7 @@ export async function lookupMetadata(input: string): Promise<MetadataLookupResul
   const candidates: MetadataCandidate[] = [];
   for (const provider of metadataProviders()) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3500);
+    const timeout = setTimeout(() => controller.abort(), 10000);
     try {
       candidates.push(...(await provider.lookup(parsed, controller.signal)));
     } catch {
