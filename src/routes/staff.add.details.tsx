@@ -62,8 +62,8 @@ function DetailsStep() {
       if (extraBits) setExtra(extraBits);
       setIdentifyNote(
         result.title
-          ? "Filled from your photos by Gemini — check it before continuing."
-          : "Gemini could not read a title from those photos.",
+          ? "Filled from your photos by AI — check it before continuing."
+          : "The AI could not read a title from those photos.",
       );
     } catch (error) {
       setIdentifyNote(
@@ -111,7 +111,7 @@ function DetailsStep() {
             <p className="mt-3 text-[0.86rem] leading-6 text-lamplight/75">{identifyNote}</p>
           ) : (
             <p className="mt-3 text-[0.86rem] leading-6 text-foreground/45">
-              Uses Gemini (free). It can read books, games, CDs and vinyl from a photo — always
+              Uses AI to read books, games, CDs and vinyl from a photo — always
               check the result.
             </p>
           )}

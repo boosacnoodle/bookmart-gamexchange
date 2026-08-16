@@ -19,11 +19,28 @@ export interface PhotoIdentificationProvider {
   identify(request: AiPhotoRequest): Promise<PhotoIdentifyResult>;
 }
 
+/**
+ * Server-side AI photo identification.
+ *
+ * SECURITY: This module runs ONLY on the server (imported exclusively from
+ * `*.server.ts` modules). API keys are read from server env vars and are
+ * NEVER sent to the browser. The public website can never extract them.
+ *
+ * Provider selection: set AI_PHOTO_IDENTIFICATION_PROVIDER=openai to use
+ * OpenAI (requires OPENAI_API_KEY), otherwise Gemini is used (requires
+ * GEMINI_API_KEY). Both are gated by AI_PHOTO_IDENTIFICATION_ENABLED=true.
+ */
 export function aiPhotoConfigured() {
-  return (
-    process.env.AI_PHOTO_IDENTIFICATION_ENABLED === "true" &&
-    Boolean(process.env.GEMINI_API_KEY)
-  );
+  if (process.env.AI_PHOTO_IDENTIFICATION_ENABLED !== "true") return false;
+  const provider = process.env.AI_PHOTO_IDENTIFICATION_PROVIDER ?? "gemini";
+  if (provider === "openai") return Boolean(process.env.OPENAI_API_KEY);
+  return Boolean(process.env.GEMINI_API_KEY);
+}
+
+export function aiPhotoProviderName(): string {
+  if (!aiPhotoConfigured()) return "Disabled AI Photo Identification";
+  const provider = process.env.AI_PHOTO_IDENTIFICATION_PROVIDER ?? "gemini";
+  return provider === "openai" ? "OpenAI Vision" : "Gemini Flash";
 }
 
 const SYSTEM_PROMPT = [
@@ -57,7 +74,7 @@ export class DisabledPhotoIdentificationProvider implements PhotoIdentificationP
   async identify(_request: AiPhotoRequest): Promise<PhotoIdentifyResult> {
     void _request;
     throw new Error(
-      "AI photo identification is not configured. Add a Google AI Studio (Gemini) key to identify rare and unbarcoded items.",
+      "AI photo identification is not configured. Add an OpenAI or Google AI Studio (Gemini) key to identify rare and unbarcoded items.",
     );
   }
 }
@@ -115,8 +132,62 @@ export class GeminiPhotoIdentificationProvider implements PhotoIdentificationPro
   }
 }
 
+export class OpenAIPhotoIdentificationProvider implements PhotoIdentificationProvider {
+  name = "OpenAI Vision";
+  async identify(request: AiPhotoRequest): Promise<PhotoIdentifyResult> {
+    if (!aiPhotoConfigured())
+      throw new Error("OpenAI photo identification is disabled or missing server configuration.");
+    const model = process.env.OPENAI_PHOTO_MODEL ?? "gpt-4o-mini";
+    const endpoint = "https://api.openai.com/v1/chat/completions";
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: `Category hint: ${request.category}. Extract only visible facts.` },
+              ...request.imageUrls.map((imageUrl) => ({
+                type: "image_url",
+                image_url: { url: imageUrl },
+              })),
+            ],
+          },
+        ],
+        temperature: 0.2,
+        response_format: { type: "json_object" },
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`OpenAI photo identification failed (HTTP ${response.status}).`);
+    }
+    const data = (await response.json()) as {
+      choices?: { message?: { content?: string } }[];
+    };
+    const text = (data.choices?.[0]?.message?.content ?? "").trim();
+    const raw = JSON.parse(text) as Record<string, unknown>;
+    return {
+      title: clean(raw.title),
+      creator: clean(raw.creator),
+      publisher: clean(raw.publisher),
+      format: clean(raw.format),
+      year: clean(raw.year),
+      category: clean(raw.category),
+      description: clean(raw.description),
+    };
+  }
+}
+
 export function photoIdentificationProvider(): PhotoIdentificationProvider {
-  return aiPhotoConfigured()
-    ? new GeminiPhotoIdentificationProvider()
-    : new DisabledPhotoIdentificationProvider();
+  if (!aiPhotoConfigured()) return new DisabledPhotoIdentificationProvider();
+  const provider = process.env.AI_PHOTO_IDENTIFICATION_PROVIDER ?? "gemini";
+  return provider === "openai"
+    ? new OpenAIPhotoIdentificationProvider()
+    : new GeminiPhotoIdentificationProvider();
 }
